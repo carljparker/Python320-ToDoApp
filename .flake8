@@ -1,0 +1,11 @@
+
+[flake8]
+ignore=
+  E201, # Spaces after parens improves readability 
+  E202, # Spaces before parens improves readability
+  E251  # Spaces around equals improves readability
+  W391  # A single blank line at the end of the file is useful
+
+
+# --- END --- #
+
