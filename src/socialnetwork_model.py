@@ -5,10 +5,7 @@ Provide an SQL infrastructure for social network
 import sys
 import typing  # type: ignore  # noqa:F401  pylint:disable=unused-import
 
-from pymongo import MongoClient
-from pymongo.collection import ReturnDocument
-from pymongo.errors import PyMongoError
-
+import peewee as pw  # type: ignore
 #
 # When specifying both flake8 and pylint directives
 # on the same line, flake8 needs to come first.
@@ -33,120 +30,69 @@ logger.add( "log_{time:YYYY-MM-DD}.log",
             format=LOG_FORMAT,
             level="DEBUG" )
 
-class UsersTable():
+db = pw.SqliteDatabase('sn.db')
+
+
+class BaseModel( pw.Model ):
     '''
+    Inherited by our other database classes.
+    '''
+    class Meta:
+        '''
+        Class composed into the BaseModel; evidently
+        part of the pattern for peewee.
+        '''
+        database = db
+
+
+class UsersTable( BaseModel ):
+    '''
+    Class for the users table in our database.
     Instances of this class correspond to rows in the table,
     where a row is an individual user.
     '''
-    def __init__(self, user_id, user_name, user_last_name, email ):
-        logger.debug( "UsersTable" )
-        self.user_id   = user_id
-        self.user_name = user_name
-        self.user_last_name = user_last_name
-        self.email     = email
+    user_id = pw.CharField( primary_key = True,
+                            max_length = 30,
+                            constraints=[pw.Check("LENGTH(user_id) < 30")])
+    user_name = pw.CharField( max_length = 30,
+                              constraints=[pw.Check("LENGTH(user_name) < 30")])
+    user_last_name = pw.CharField( max_length = 100,
+                                   constraints=[
+                                       pw.Check("LENGTH(user_last_name) < 100")
+                                   ] )
+    email = pw.CharField( max_length = 50,
+                          constraints=[pw.Check("LENGTH(email) < 50")] )
 
-    @staticmethod
-    def as_dict( user_id, user_name, user_last_name, email ):
+    def show( self ):
         '''
-        Create a dictionary for a new user.
+        Prints the state of an instance of a user.
         '''
-        logger.debug( "Entering method" )
-
-        new_user = {}
-        new_user[ 'user_id' ]   = user_id
-        new_user[ 'user_name' ] = user_name
-        new_user[ 'user_last_name' ] = user_last_name
-        new_user[ 'email' ]     = email
-
-        return new_user
+        print( self.user_id )
+        print( self.user_name )
+        print( self.user_last_name )
+        print( self.email )
 
 
-class UserCache():
-    cache = {}
-
-    @classmethod
-    def store( self, userID ):
-        logger.debug( f"userID: {userID}" )
-        if userID not in self.cache:
-            self.cache[ userID ] = 1
-            return True
-        logger.warning( f"userID: {userID} already in cache" )
-        return False
-
-    @classmethod
-    def read( self, userID ):
-        logger.debug( f"userID: {userID}" )
-        if userID in self.cache:
-            return True
-        logger.warning( f"userID: {userID} not in cache" )
-        return False
-
-    @classmethod
-    def erase( self, userID ):
-        logger.debug( f"userID: {userID}" )
-        if userID in self.cache:
-            del self.cache[ userID ]
-            return True
-        logger.warning( f"userID: {userID} not in cache" )
-        return False
-
-
-class StatusTable():
+class StatusTable( BaseModel ):
     '''
+    Class for the status table in our database.
     Instances of this class correspond to rows in the table,
     where a row is an individual status.
     '''
-    def __init__(self, status_id, user_id, status_text ):
-        logger.debug( "StatusTable" )
-        self.status_id   = status_id
-        self.user_id     = user_id
-        self.status_text = status_text
-
-    @staticmethod
-    def as_dict( status_id, user_id, status_text ):
-        '''
-        Create a dictionary object that conforms to the schema for a
-        status
-        '''
-        logger.debug( "Entering method" )
-
-        new_status = {}
-        new_status[ 'status_id' ]   = status_id
-        new_status[ 'user_id' ]   = user_id
-        new_status[ 'status_text' ] = status_text
-
-        return new_status
-
-def dict_to_status_gen( dict_iterator ):
-    '''
-    Create a generator of StatusTable objects
-    from an iterator of status dictionaries
-    '''
-    logger.debug( "Enter function" )
-
-    for status_dict in dict_iterator:
-        yield( StatusTable(
-                status_dict[ "status_id" ],
-                status_dict[ "user_id" ],
-                status_dict[ "status_text" ]
-            )
-        )
-
-class MongoDBConnection():
-    """MongoDB Connection"""
-
-    def __init__(self, host='127.0.0.1', port=27017):
-        """ be sure to use the ip address not name for local windows"""
-        self.host = host
-        self.port = port
-        self.connection = None
-
-    def __enter__(self):
-        self.connection = MongoClient(self.host, self.port)
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.connection.close()
+    status_id = pw.CharField( max_length = 30,
+                              constraints=[
+                                  pw.Check("LENGTH(status_id) < 30")
+                              ]
+                              )
+    user_id = pw.ForeignKeyField( UsersTable,
+                                  backref='posted_by',
+                                  null = False
+                                  )
+    status_text = pw.CharField( max_length = 128,
+                                constraints=[
+                                    pw.Check("LENGTH(status_text) < 128")
+                                ]
+                                )
 
 
 class UserCollection():
@@ -164,29 +110,27 @@ class UserCollection():
         logger.debug( "Entering method" )
         logger.debug( "Param: user_id: " + new_user_id )
 
-        if UserCache().read( new_user_id ):
+        if self.search_user( new_user_id ):
             logger.debug( "User already in database" )
             return False
 
         try:
-            with mongo:
-                d_b = mongo.connection.media
-                users_collection = d_b["users"]
-                new_user = UsersTable.as_dict(
+            with db.transaction():
+                new_user = UsersTable.create(
                     user_id = new_user_id,
                     user_name = new_user_name,
                     user_last_name = new_user_last_name,
                     email = new_email
                 )
-                users_collection.insert_one( new_user )
-
-        except ( PyMongoError ) as db_exception:
+                new_user.save()
+        except ( pw.DatabaseError,
+                 pw.IntegrityError,
+                 pw.NotSupportedError ) as db_exception:
             logger.info(f'Error creating user = {new_user_id}')
             logger.info(db_exception)
             return False
 
         else:
-            UserCache().store( new_user_id )
             logger.debug( "User added" )
             return True
 
@@ -206,32 +150,23 @@ class UserCollection():
             return False
 
         try:
-            with mongo:
-                d_b = mongo.connection.media
-                users_collection = d_b["users"]
+            with db.transaction():
+                UsersTable.update(
+                    user_name = mod_user_name,
+                    user_last_name = mod_user_last_name,
+                    email = mod_email
+                ).where( UsersTable.user_id == mod_user_id ).execute()
 
-                query_json  = { 'user_id': mod_user_id }
-                update_json = { '$set': {
-                        'user_name': mod_user_name,
-                        'user_last_name': mod_user_last_name,
-                        'email': mod_email,
-                    }
-                }
+            logger.debug( "user_to_mod.user_name: ", user_to_mod.user_name )
 
-                updated_user = users_collection.find_one_and_update(
-                        query_json,
-                        update_json,
-                        return_document=ReturnDocument.AFTER
-                )
-
-        except ( PyMongoError ) as db_exception:
+        except ( pw.DatabaseError,
+                 pw.IntegrityError,
+                 pw.NotSupportedError ) as db_exception:
             logger.info(f'Error modifying user = {mod_user_id}')
             logger.info(db_exception)
 
-        if updated_user[ "email" ] == mod_email:
-            logger.debug( "User updated" )
-            return True
-        return False
+        logger.debug( "User updated" )
+        return True
 
     def delete_user( self, delete_user_id ):
         '''
@@ -242,29 +177,27 @@ class UserCollection():
         - Otherwise, it returns True.
         '''
         logger.debug( "Entering function" )
-        logger.debug( f"delete_user_id: {delete_user_id}" )
 
-        user_to_del = UserCache().read( delete_user_id )
+        user_to_del = self.search_user( delete_user_id )
 
-        if not user_to_del:
+        if user_to_del is None:
             logger.debug( "User not in database" )
             return False
-        logger.debug( f"delete_user_id: {delete_user_id}" )
 
         try:
-            with mongo:
-                d_b = mongo.connection.media
-                users_collection = d_b["users"]
+            with db.transaction():
+                user_to_del.delete_instance(
+                    #
+                    # Ensure that we delete any dependent rows
+                    #
+                    recursive = True
+                )
 
-                query = { 'user_id': delete_user_id }
-                users_collection.delete_one( query )
+            logger.debug( "user_to_del.user_name: ", user_to_del.user_name )
 
-                #
-                # Remove any statuses associated with this user
-                #
-                UserStatusCollection().delete_status_by_user( delete_user_id )
-
-        except ( PyMongoError ) as db_exception:
+        except ( pw.DatabaseError,
+                 pw.IntegrityError,
+                 pw.NotSupportedError ) as db_exception:
             logger.info(f'Error modifying user = {delete_user_id}')
             logger.info(db_exception)
             return False
@@ -280,26 +213,23 @@ class UserCollection():
         logger.debug( "Entering method" )
         logger.debug( "Param: user_id: " + user_id )
 
-
         try:
-            with mongo:
-                d_b = mongo.connection.media
-                users_collection = d_b["users"]
-                query = { 'user_id': user_id }
-                user = users_collection.find_one( query )
+            user = UsersTable.get_or_none( UsersTable.user_id == user_id )
 
-        except ( PyMongoError ) as db_exception:
+        except ( pw.DatabaseError,
+                 pw.IntegrityError,
+                 pw.NotSupportedError ) as db_exception:
             logger.info(f'Error searching for user = {user_id}')
             logger.info(db_exception)
 
         else:
             if user:
                 logger.debug( "User ID found" )
-                logger.debug( f"User type: { type( user ) }" )
-                return UsersTable( user["user_id"], user["user_name"],
-                                   user["user_last_name"], user["email"] )
+                logger.debug( "User type: ", type( user ) )
+                return user
             logger.debug( "User ID not in database" )
             return None
+
 
 class UserStatusCollection():
     '''
@@ -316,35 +246,22 @@ class UserStatusCollection():
         logger.debug( "Entering method" )
         logger.debug( "Param: new_status_id: " + new_status_id )
 
-        #
-        # Before we add the status, need to verify that
-        # the user is in the users table.
-        #
-        # (Normally handled by SQL constraints, but under
-        # MongoDB need to do it ourselves.)
-        #
-        if UserCache().read( new_status_user_id ):
-            logger.debug( f"Verified that {new_status_user_id} has an account" )
-        else:
-            logger.debug( f"No account found for {new_status_user_id}" )
-            return False
-
         if self.search_status( new_status_id ):
             logger.debug( "Status already in database" )
             return False
 
         try:
-            with mongo:
-                d_b = mongo.connection.media
-                status_collection = d_b["status"]
-                new_status = StatusTable.as_dict(
+            with db.transaction():
+                new_status = StatusTable.create(
                     status_id = new_status_id,
                     user_id = new_status_user_id,
                     status_text = new_status_text,
                 )
-                status_collection.insert_one( new_status )
+                new_status.save()
 
-        except ( PyMongoError ) as db_exception:
+        except ( pw.DatabaseError,
+                 pw.IntegrityError,
+                 pw.NotSupportedError ) as db_exception:
             logger.info(f'Error creating status = {new_status_id}')
             logger.info(db_exception)
             return False
@@ -357,7 +274,6 @@ class UserStatusCollection():
         '''
         Modifies an existing status
         '''
-        # pylint:disable=unused-argument
         logger.debug( "Entering method" )
         logger.debug( "Param: mod_status_id: " + mod_status_id )
         logger.debug( "Param: mod_status_text: " + mod_status_text )
@@ -369,27 +285,24 @@ class UserStatusCollection():
             return False
 
         try:
-            with mongo:
-                d_b = mongo.connection.media
-                status_collection = d_b["status"]
+            with db.transaction():
+                StatusTable.update(
+                    status_text = mod_status_text).where(
+                        ( StatusTable.status_id == mod_status_id)
+                    and ( StatusTable.user_id == user_id ) ).execute()  # noqa: E501 W503
 
-                query_json  = { 'status_id': mod_status_id }
-                update_json = { '$set': { 'status_text': mod_status_text } }
+            logger.debug(
+                "status_to_mod.status_text: ", status_to_mod.status_text
+            )
 
-                updated_doc = status_collection.find_one_and_update(
-                        query_json,
-                        update_json,
-                        return_document=ReturnDocument.AFTER
-                )
-
-        except ( PyMongoError ) as db_exception:
+        except ( pw.DatabaseError,
+                 pw.IntegrityError,
+                 pw.NotSupportedError ) as db_exception:
             logger.info(f'Error modifying status = {mod_status_id}')
             logger.info(db_exception)
 
-        if updated_doc[ "status_text" ] == mod_status_text:
-            logger.debug( "Status updated" )
-            return True
-        return False
+        logger.debug( "User updated" )
+        return True
 
     def delete_status( self, delete_status_id ):
         '''
@@ -407,59 +320,23 @@ class UserStatusCollection():
             logger.debug( "Status not in database" )
             return False
 
-        logger.debug(
-            "status_to_del.status_text: ", status_to_del.status_text
-        )
-
         try:
-            with mongo:
-                d_b = mongo.connection.media
-                status_collection = d_b["status"]
+            with db.transaction():
+                status_to_del.delete_instance(
+                    #
+                    # Ensure that we delete any dependent rows
+                    #
+                    recursive = True
+                )
 
-                query = { 'status_id': delete_status_id }
-                delete_result = status_collection.delete_one( query )
-                logger.debug( f"{ delete_result.deleted_count } status deleted" )
+            logger.debug(
+                "status_to_del.status_text: ", status_to_del.status_text
+            )
 
-        except ( PyMongoError ) as db_exception:
+        except ( pw.DatabaseError,
+                 pw.IntegrityError,
+                 pw.NotSupportedError ) as db_exception:
             logger.info(f'Error deleting status = {delete_status_id}')
-            logger.info(db_exception)
-            return False
-
-        else:
-            logger.debug( "Status deleted" )
-            return True
-
-    def delete_status_by_user( self, delete_user_id ):
-        '''
-        Deletes all statuses for the specified user from status_collection.
-
-        Requirements:
-        - Returns False if there are any errors (such as status_id not found)
-        - Otherwise, it returns True.
-        '''
-        logger.debug( "Entering function" )
-
-        try:
-            with mongo:
-                d_b = mongo.connection.media
-                status_collection = d_b["status"]
-
-                query = { 'user_id': delete_user_id }
-                status_count = status_collection.count_documents( query )
-
-                if status_count:
-                    logger.debug(
-                        f"Deleting { status_count } statuses "
-                      + f"found for { delete_user_id }"
-                    )
-                else:
-                    logger.debug( f"No statuses found for {delete_user_id}" )
-                    return False
-
-                status_collection.delete_many( query )
-
-        except ( PyMongoError ) as db_exception:
-            logger.info(f'Error deleting status for {delete_user_id}')
             logger.info(db_exception)
             return False
 
@@ -475,24 +352,19 @@ class UserStatusCollection():
         logger.debug( "Param: status_id: " + status_id )
 
         try:
-            with mongo:
-                d_b = mongo.connection.media
-                status_collection = d_b["status"]
-                query = { 'status_id': status_id }
-                status = status_collection.find_one( query )
+            status = StatusTable.get_or_none(
+                StatusTable.status_id == status_id )
 
-        except ( PyMongoError ) as db_exception:
+        except ( pw.DatabaseError,
+                 pw.IntegrityError,
+                 pw.NotSupportedError ) as db_exception:
             logger.info(f'Error searching for status = {status_id}')
             logger.info(db_exception)
 
         else:
             if status:
                 logger.debug( "Status ID found" )
-                return StatusTable(
-                        status[ "status_id" ],
-                        status[ "user_id" ],
-                        status[ "status_text" ]
-                )
+                return status
             logger.debug( "Status ID not in database" )
             return None
 
@@ -509,13 +381,12 @@ class UserStatusCollection():
         logger.debug( "Param: user_id: " + user_id )
 
         try:
-            with mongo:
-                d_b = mongo.connection.media
-                status_collection = d_b["status"]
-                query = { 'user_id': user_id }
-                status_list = status_collection.find( query )
+            status_list = StatusTable.select().where(
+                StatusTable.user_id == user_id )
 
-        except ( PyMongoError ) as db_exception:
+        except ( pw.DatabaseError,
+                 pw.IntegrityError,
+                 pw.NotSupportedError ) as db_exception:
             logger.info(f'Error searching for statuses for {user_id}')
             logger.info(db_exception)
 
@@ -523,7 +394,7 @@ class UserStatusCollection():
             if status_list:
                 logger.debug( "Statuses for " + user_id + " found" )
                 # pylint: disable=not-an-iterable
-                return [ status[ "status_text" ] for status in status_list ]
+                return [ status.status_text for status in status_list ]
             logger.debug( "User ID: " + user_id + " not in database" )
             return None
 
@@ -540,24 +411,20 @@ class UserStatusCollection():
         logger.debug( "Param: target_string: " + target_string )
 
         try:
-            with mongo:
-                d_b = mongo.connection.media
-                status_collection = d_b["status"]
-                #
-                # https://stackoverflow.com/a/10616781/1106930
-                #
-                query = { 'status_text': { '$regex' : target_string } }
-                status_iterator = status_collection.find( query )
+            status_iterator = StatusTable.select() \
+                .where( StatusTable.status_text.contains( target_string )) \
+                .iterator()
 
-        except ( PyMongoError ) as db_exception:
+        except ( pw.DatabaseError,
+                 pw.IntegrityError,
+                 pw.NotSupportedError ) as db_exception:
             logger.info(f'Error searching for statuses {target_string}')
             logger.info(db_exception)
 
         else:
             if status_iterator:
                 logger.debug( "Iterator for " + target_string + " retrieved" )
-                status_gen = dict_to_status_gen( status_iterator )
-                return status_gen
+                return status_iterator
             logger.debug( "Could not retrieve iterator for {target_string}" )
             return None
 
@@ -565,9 +432,19 @@ class UserStatusCollection():
 #
 # Set up database
 #
-logger.debug( "Initialize context manager for MongoDB" )
+logger.debug( "Connect to database" )
+db.connect()
 
-mongo = MongoDBConnection()
+logger.debug( "Configure database" )
+db.execute_sql( 'PRAGMA foreign_keys = ON;' )
+
+logger.debug( "Create tables" )
+db.create_tables(
+    [
+        UsersTable,
+        StatusTable
+    ]
+)
 
 logger.debug( "Complete database setup" )
 

@@ -47,19 +47,6 @@ class TestMain(unittest.TestCase):
         user_col = main.init_user_collection()
         self.assertIs( main.load_users( "accounts.csv", user_col ), True )
 
-    def test_2_load_status_updates(self):
-        '''
-        Test loading statuses from a CSV into the collection
-        '''
-        status_col = main.init_status_collection()
-        self.assertIs(
-            main.load_status_updates(
-                "status_updates_reasonable.csv",
-                status_col
-            ),
-            True
-        )
-
     def test_save_users(self):
         '''
         Test saving users from the collection to a CSV
@@ -75,62 +62,20 @@ class TestMain(unittest.TestCase):
         user_col = main.init_user_collection()
         self.assertIs( main.load_users( "accounts-bad.csv", user_col ), False)
 
-    @unittest.skip( "Perf testing only" )
-    def test_10k_load_status_updates(self):
+    def test_2_load_status_updates(self):
         '''
         Test loading statuses from a CSV into the collection
         '''
         status_col = main.init_status_collection()
         self.assertIs(
             main.load_status_updates(
-                "status_updates_10K.csv",
+                "status_updates_reasonable.csv",
                 status_col
             ),
             True
         )
 
-    @unittest.skip( "Perf testing only" )
-    def test_5k_load_status_updates(self):
-        '''
-        Test loading statuses from a CSV into the collection
-        '''
-        status_col = main.init_status_collection()
-        self.assertIs(
-            main.load_status_updates(
-                "status_updates_5K.csv",
-                status_col
-            ),
-            True
-        )
 
-    def test_2k_load_status_updates(self):
-        '''
-        Test loading statuses from a CSV into the collection
-        '''
-        user_col = main.init_user_collection()
-        self.assertIs( main.load_users( "accounts.csv", user_col ), True )
-        status_col = main.init_status_collection()
-        self.assertIs(
-            main.load_status_updates(
-                "status_updates_2K.csv",
-                status_col
-            ),
-            True
-        )
-
-    @unittest.skip( "Perf testing only" )
-    def test_1k_load_status_updates(self):
-        '''
-        Test loading statuses from a CSV into the collection
-        '''
-        status_col = main.init_status_collection()
-        self.assertIs(
-            main.load_status_updates(
-                "status_updates_1K.csv",
-                status_col
-            ),
-            True
-        )
     def test_load_bad_status_updates(self):
         '''
         Test how we handle loading a malformed CSV of statuses
@@ -320,8 +265,6 @@ class TestMain(unittest.TestCase):
         '''
         Test whether we fail to add a status when we expect to fail
         '''
-        user_col = main.init_user_collection()
-        self.assertIs( main.load_users( "accounts.csv", user_col ), True )
         status_col = main.init_status_collection()
         self.assertIs(
             main.load_status_updates(
@@ -344,8 +287,6 @@ class TestMain(unittest.TestCase):
         '''
         Test whether we can update the data for a status
         '''
-        user_col = main.init_user_collection()
-        self.assertTrue( main.load_users( "accounts.csv", user_col ) )
         status_col = main.init_status_collection()
         self.assertIs(
             main.load_status_updates(
@@ -455,7 +396,7 @@ class TestMain(unittest.TestCase):
                   "]" 
         )
 
-    def test_search_all_status_updates(self):
+    def test_search_all_status_upates(self):
         '''
         Test whether we can find all the status updates for a 
         user that we know has multiple updates.
@@ -473,7 +414,7 @@ class TestMain(unittest.TestCase):
             list,
             msg = "main.search_all_status_updates() did not return a list" )
 
-    def test_filter_status_by_string(self):
+    def test_search_all_status_upates(self):
         '''
         Test whether we can find all the status updates for a 
         user that we know has multiple updates.

@@ -36,13 +36,6 @@ class TestSN(unittest.TestCase):
             msg="Returned object not status_collection"
         )
 
-    def test_user_cache( self ):
-        sn.UserCache().store( "cajopa" )
-        self.assertTrue( sn.UserCache().read( "cajopa" ) )
-
-        sn.UserCache().erase( "cajopa" )
-        self.assertFalse( sn.UserCache().read( "cajopa" ) )
-
     def test_add_user(self):
         new_user = self.user_col.add_user( "cajopa", "cajopa@uw.edu", "Carl", "Parker" )
         self.assertTrue( new_user )
@@ -139,7 +132,7 @@ class TestSN(unittest.TestCase):
         self.assertTrue( new_status )
         status_iterator = self.status_col.filter_status_by_string( "host" )
         self.assertIsInstance( status_iterator, Iterable )
-        self.assertEqual( len( [ stat.status_text for stat in status_iterator ] ), 2 )
+        self.assertEquals( len( [ stat.status_text for stat in status_iterator ] ), 2 )
 
 
 # --- END --- #

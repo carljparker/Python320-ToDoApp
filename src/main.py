@@ -115,32 +115,28 @@ def load_status_updates(filename, status_collection):
     - Otherwise, it returns True.
     '''
     logger.debug( "Entering function" )
-
-    num_status_added = 0
     with open(filename, newline='', encoding="utf-8") as csvfile:
         reader = csv.DictReader(csvfile)
         #
         # STATUS_ID, USER_ID, STATUS_TEXT
         #
         for row in reader:
-            #
-            # Check for missing attributes
-            #
-            for status_attr in row.values():
-                if not status_attr:
-                    return False
-            status_added = status_collection.add_status(
-                row['USER_ID'],
-                row['STATUS_ID'],
-                row['STATUS_TEXT']
-            )
-            if status_added:
-                num_status_added += 1
+            if search_status( row['STATUS_ID'], status_collection ) is None:
+                #
+                # Check for missing attributes
+                #
+                for status_attr in row.values():
+                    if not status_attr:
+                        return False
+                status_collection.add_status(
+                    row['USER_ID'],
+                    row['STATUS_ID'],
+                    row['STATUS_TEXT']
+                )
             else:
-                logger.debug( f"Status, {row['STATUS_ID']}, not added" )
-
-    logger.debug( f"Number of statuses added: {num_status_added}" )
+                continue
     return True
+
 
 def save_status_updates(filename, status_collection):  # pylint:disable=unused-argument
     '''
