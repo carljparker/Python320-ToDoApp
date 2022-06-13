@@ -11,7 +11,7 @@ import unittest
 
 import socialnetwork_model as sn
 
-import main
+import main as main
 
 
 class TestMain(unittest.TestCase):
@@ -386,6 +386,7 @@ class TestMain(unittest.TestCase):
         status_data = "status_updates_reasonable.csv"
         test_status_id = 'Isabel.Avivah34_27'
         self.assertTrue( main.load_status_updates( status_data, status_col ) )
+        breakpoint();
         self.assertIsInstance(
             main.search_status( test_status_id, status_col ),
             sn.StatusTable,
