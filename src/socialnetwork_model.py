@@ -73,24 +73,24 @@ class UsersTable( BaseModel ):
         print( self.email )
 
 
-class StatusTable( BaseModel ):
+class ToDoTable( BaseModel ):
     '''
-    Class for the status table in our database.
+    Class for the ToDo table in our database.
     Instances of this class correspond to rows in the table,
-    where a row is an individual status.
+    where a row is an individual ToDo item.
     '''
-    status_id = pw.CharField( max_length = 30,
+    todo_id = pw.CharField( max_length = 30,
                               constraints=[
-                                  pw.Check("LENGTH(status_id) < 30")
+                                  pw.Check("LENGTH(todo_id) < 30")
                               ]
                               )
     user_id = pw.ForeignKeyField( UsersTable,
                                   backref='posted_by',
                                   null = False
                                   )
-    status_text = pw.CharField( max_length = 128,
+    todo_text = pw.CharField( max_length = 128,
                                 constraints=[
-                                    pw.Check("LENGTH(status_text) < 128")
+                                    pw.Check("LENGTH(todo_text) < 128")
                                 ]
                                 )
 
@@ -239,30 +239,30 @@ class UserStatusCollection():
     def __init__(self):
         logger.debug( "Initialize UserStatusCollection" )
 
-    def add_status( self, new_status_user_id, new_status_id, new_status_text ):
+    def add_status( self, new_status_user_id, new_todo_id, new_todo_text ):
         '''
         add a new status message to the collection
         '''
         logger.debug( "Entering method" )
-        logger.debug( "Param: new_status_id: " + new_status_id )
+        logger.debug( "Param: new_todo_id: " + new_todo_id )
 
-        if self.search_status( new_status_id ):
+        if self.search_status( new_todo_id ):
             logger.debug( "Status already in database" )
             return False
 
         try:
             with db.transaction():
-                new_status = StatusTable.create(
-                    status_id = new_status_id,
+                new_status = ToDoTable.create(
+                    todo_id = new_todo_id,
                     user_id = new_status_user_id,
-                    status_text = new_status_text,
+                    todo_text = new_todo_text,
                 )
                 new_status.save()
 
         except ( pw.DatabaseError,
                  pw.IntegrityError,
                  pw.NotSupportedError ) as db_exception:
-            logger.info(f'Error creating status = {new_status_id}')
+            logger.info(f'Error creating status = {new_todo_id}')
             logger.info(db_exception)
             return False
 
@@ -270,15 +270,15 @@ class UserStatusCollection():
             logger.debug( "Status added" )
             return True
 
-    def modify_status( self, mod_status_id, user_id, mod_status_text ):
+    def modify_status( self, mod_todo_id, user_id, mod_todo_text ):
         '''
         Modifies an existing status
         '''
         logger.debug( "Entering method" )
-        logger.debug( "Param: mod_status_id: " + mod_status_id )
-        logger.debug( "Param: mod_status_text: " + mod_status_text )
+        logger.debug( "Param: mod_todo_id: " + mod_todo_id )
+        logger.debug( "Param: mod_todo_text: " + mod_todo_text )
 
-        status_to_mod = self.search_status( mod_status_id )
+        status_to_mod = self.search_status( mod_todo_id )
 
         if status_to_mod is None:
             logger.debug( "Status not in database" )
@@ -286,35 +286,35 @@ class UserStatusCollection():
 
         try:
             with db.transaction():
-                StatusTable.update(
-                    status_text = mod_status_text).where(
-                        ( StatusTable.status_id == mod_status_id)
-                    and ( StatusTable.user_id == user_id ) ).execute()  # noqa: E501 W503
+                ToDoTable.update(
+                    todo_text = mod_todo_text).where(
+                        ( ToDoTable.todo_id == mod_todo_id)
+                    and ( ToDoTable.user_id == user_id ) ).execute()  # noqa: E501 W503
 
             logger.debug(
-                "status_to_mod.status_text: ", status_to_mod.status_text
+                "status_to_mod.todo_text: ", status_to_mod.todo_text
             )
 
         except ( pw.DatabaseError,
                  pw.IntegrityError,
                  pw.NotSupportedError ) as db_exception:
-            logger.info(f'Error modifying status = {mod_status_id}')
+            logger.info(f'Error modifying status = {mod_todo_id}')
             logger.info(db_exception)
 
         logger.debug( "User updated" )
         return True
 
-    def delete_status( self, delete_status_id ):
+    def delete_status( self, delete_todo_id ):
         '''
         Deletes a status from status_collection.
 
         Requirements:
-        - Returns False if there are any errors (such as status_id not found)
+        - Returns False if there are any errors (such as todo_id not found)
         - Otherwise, it returns True.
         '''
         logger.debug( "Entering function" )
 
-        status_to_del = self.search_status( delete_status_id )
+        status_to_del = self.search_status( delete_todo_id )
 
         if status_to_del is None:
             logger.debug( "Status not in database" )
@@ -330,13 +330,13 @@ class UserStatusCollection():
                 )
 
             logger.debug(
-                "status_to_del.status_text: ", status_to_del.status_text
+                "status_to_del.todo_text: ", status_to_del.todo_text
             )
 
         except ( pw.DatabaseError,
                  pw.IntegrityError,
                  pw.NotSupportedError ) as db_exception:
-            logger.info(f'Error deleting status = {delete_status_id}')
+            logger.info(f'Error deleting status = {delete_todo_id}')
             logger.info(db_exception)
             return False
 
@@ -344,21 +344,21 @@ class UserStatusCollection():
             logger.debug( "Status deleted" )
             return True
 
-    def search_status( self, status_id ):
+    def search_status( self, todo_id ):
         '''
         Searches for status data
         '''
         logger.debug( "Entering method" )
-        logger.debug( "Param: status_id: " + status_id )
+        logger.debug( "Param: todo_id: " + todo_id )
 
         try:
-            status = StatusTable.get_or_none(
-                StatusTable.status_id == status_id )
+            status = ToDoTable.get_or_none(
+                ToDoTable.todo_id == todo_id )
 
         except ( pw.DatabaseError,
                  pw.IntegrityError,
                  pw.NotSupportedError ) as db_exception:
-            logger.info(f'Error searching for status = {status_id}')
+            logger.info(f'Error searching for status = {todo_id}')
             logger.info(db_exception)
 
         else:
@@ -381,8 +381,8 @@ class UserStatusCollection():
         logger.debug( "Param: user_id: " + user_id )
 
         try:
-            status_list = StatusTable.select().where(
-                StatusTable.user_id == user_id )
+            status_list = ToDoTable.select().where(
+                ToDoTable.user_id == user_id )
 
         except ( pw.DatabaseError,
                  pw.IntegrityError,
@@ -394,7 +394,7 @@ class UserStatusCollection():
             if status_list:
                 logger.debug( "Statuses for " + user_id + " found" )
                 # pylint: disable=not-an-iterable
-                return [ status.status_text for status in status_list ]
+                return [ status.todo_text for status in status_list ]
             logger.debug( "User ID: " + user_id + " not in database" )
             return None
 
@@ -411,8 +411,8 @@ class UserStatusCollection():
         logger.debug( "Param: target_string: " + target_string )
 
         try:
-            status_iterator = StatusTable.select() \
-                .where( StatusTable.status_text.contains( target_string )) \
+            status_iterator = ToDoTable.select() \
+                .where( ToDoTable.todo_text.contains( target_string )) \
                 .iterator()
 
         except ( pw.DatabaseError,
@@ -442,7 +442,7 @@ logger.debug( "Create tables" )
 db.create_tables(
     [
         UsersTable,
-        StatusTable
+        ToDoTable
     ]
 )
 

@@ -80,7 +80,7 @@ class TestSN(unittest.TestCase):
         new_status = self.status_col.add_status( "bmeau", "bmeau_0008", "Netflix ads as well" )
         self.assertTrue( new_status )
         status = self.status_col.search_status( "bmeau_0008" )
-        self.assertEqual( status.status_text, "Netflix ads as well" )
+        self.assertEqual( status.todo_text, "Netflix ads as well" )
 
     def test_modify_status(self):
         self.user_col.add_user( "pfram", "pfram@uw.edu", "Peter", "Frampton" )
@@ -132,7 +132,7 @@ class TestSN(unittest.TestCase):
         self.assertTrue( new_status )
         status_iterator = self.status_col.filter_status_by_string( "host" )
         self.assertIsInstance( status_iterator, Iterable )
-        self.assertEquals( len( [ stat.status_text for stat in status_iterator ] ), 2 )
+        self.assertEquals( len( [ stat.todo_text for stat in status_iterator ] ), 2 )
 
 
 # --- END --- #
