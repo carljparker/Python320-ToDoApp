@@ -42,13 +42,13 @@ def init_user_collection():
     return user_col
 
 
-def init_status_collection():
+def init_todo_collection():
     '''
-    Creates and returns a new instance of UserStatusCollection
+    Creates and returns a new instance of ToDoCollection
     '''
     logger.debug( "Entering function" )
-    status_col = sn.UserStatusCollection()
-    return status_col
+    todo_col = sn.ToDoCollection()
+    return todo_col
 
 
 def load_users(filename, user_collection):
@@ -102,13 +102,13 @@ def save_users(filename, user_collection):  # pylint:disable=unused-argument
     return True
 
 
-def load_status_updates(filename, status_collection):
+def load_todo_updates(filename, todo_collection):
     '''
-    Opens a CSV file with status data and adds it to an existing
-    instance of UserStatusCollection
+    Opens a CSV file with todo data and adds it to an existing
+    instance of ToDoCollection
 
     Requirements:
-    - If a status_id already exists, it will ignore it and continue to
+    - If a todo_id already exists, it will ignore it and continue to
       the next.
     - Returns False if there are any errors(such as empty fields in the
       source CSV file)
@@ -118,17 +118,17 @@ def load_status_updates(filename, status_collection):
     with open(filename, newline='', encoding="utf-8") as csvfile:
         reader = csv.DictReader(csvfile)
         #
-        # STATUS_ID, USER_ID, STATUS_TEXT
+        # TODO_ID, USER_ID, TODO_TEXT
         #
         for row in reader:
-            if search_status( row['STATUS_ID'], status_collection ) is None:
+            if search_todo( row['STATUS_ID'], todo_collection ) is None:
                 #
                 # Check for missing attributes
                 #
-                for status_attr in row.values():
-                    if not status_attr:
+                for todo_attr in row.values():
+                    if not todo_attr:
                         return False
-                status_collection.add_status(
+                todo_collection.add_todo(
                     row['USER_ID'],
                     row['STATUS_ID'],
                     row['STATUS_TEXT']
@@ -138,7 +138,7 @@ def load_status_updates(filename, status_collection):
     return True
 
 
-def save_status_updates(filename, status_collection):  # pylint:disable=unused-argument
+def save_todo_updates(filename, todo_collection):  # pylint:disable=unused-argument
     '''
     This function is now a stub
     '''
@@ -232,105 +232,105 @@ def search_user(user_id, user_collection):
     return search_result
 
 
-def add_status(user_id, status_id, status_text, status_collection):
+def add_todo(user_id, todo_id, todo_text, todo_collection):
     '''
-    Creates a new instance of UserStatus and stores it in
-    user_collection(which is an instance of UserStatusCollection)
+    Creates a new instance of ToDo and stores it in
+    user_collection(which is an instance of ToDoCollection)
 
     Requirements:
-    - status_id cannot already exist in user_collection.
+    - todo_id cannot already exist in user_collection.
     - Returns False if there are any errors (for example, if
-      user_collection.add_status() returns False).
+      user_collection.add_todo() returns False).
     - Otherwise, it returns True.
     '''
     logger.debug( "Entering function" )
-    if search_status( status_id, status_collection ) is None:
-        return status_collection.add_status( user_id, status_id, status_text )
+    if search_todo( todo_id, todo_collection ) is None:
+        return todo_collection.add_todo( user_id, todo_id, todo_text )
     return False
 
 
-def update_status(status_id, user_id, status_text, status_collection):
+def update_todo(todo_id, user_id, todo_text, todo_collection):
     '''
-    Updates the values of an existing status_id
+    Updates the values of an existing todo_id
 
     Requirements:
     - Returns False if there any errors.
     - Otherwise, it returns True.
     '''
     logger.debug( "Entering function" )
-    if search_status( status_id, status_collection ) is not None:
-        status_collection.modify_status( status_id, user_id, status_text )
+    if search_todo( todo_id, todo_collection ) is not None:
+        todo_collection.modify_todo( todo_id, user_id, todo_text )
         return True
     #
-    # A status with that ID doesn't exist, so cannot update
+    # A todo with that ID doesn't exist, so cannot update
     #
     return False
 
 
-def delete_status(status_id, status_collection):
+def delete_todo(todo_id, todo_collection):
     '''
-    Deletes a status_id from user_collection.
+    Deletes a todo_id from user_collection.
 
     Requirements:
-    - Returns False if there are any errors (such as status_id not found)
+    - Returns False if there are any errors (such as todo_id not found)
     - Otherwise, it returns True.
     '''
     logger.debug( "Entering function" )
-    status_to_delete = search_status( status_id, status_collection )
-    if status_to_delete is None:
+    todo_to_delete = search_todo( todo_id, todo_collection )
+    if todo_to_delete is None:
         return False
-    status_collection.delete_status( status_id )
+    todo_collection.delete_todo( todo_id )
     return True
 
 
-def search_status(status_id, status_collection):
+def search_todo(todo_id, todo_collection):
     '''
-    Searches for a status in status_collection
+    Searches for a todo in todo_collection
 
     Requirements:
-    - If the status is found, returns the corresponding
-    UserStatus instance.
+    - If the todo is found, returns the corresponding
+    ToDo instance.
     - Otherwise, it returns None.
     '''
     logger.debug( "Entering function" )
-    search_result = status_collection.search_status(status_id)
+    search_result = todo_collection.search_todo(todo_id)
     if search_result is None:
         return None
     return search_result
 
 
-def search_all_status_updates( user_id, status_collection ):
+def search_all_todo_updates( user_id, todo_collection ):
     '''
-    Returns all the status updates for a specified user.
+    Returns all the todo updates for a specified user.
 
     Requirements:
     - If the user is found, returns the corresponding
-    UserStatus instances as a list.
+      ToDo instances as a list.
     - Otherwise, it returns None.
     '''
     logger.debug( "Entering function" )
-    search_result = status_collection.search_all_status_updates( user_id )
+    search_result = todo_collection.search_all_todo_updates( user_id )
     if search_result is None:
         return None
     return search_result
 
 
-def filter_status_by_string( target_string, status_collection ):
+def filter_todo_by_string( target_string, todo_collection ):
     '''
-    Returns all the status updates for a specified user.
+    Returns all the todo updates for a specified user.
 
     Requirements:
-    - Returns an iterator to all status updates that contain the
-      specified string. Note that there might not be any such status
+    - Returns an iterator to all todo updates that contain the
+      specified string. Note that there might not be any such todo
       updates . . . :-O
     '''
     logger.debug( "Entering method" )
     logger.debug( "Param: target_string: " + target_string )
 
-    status_iterator = status_collection.filter_status_by_string( target_string )
-    if status_iterator is None:
+    todo_iterator = todo_collection.filter_todo_by_string( target_string )
+    if todo_iterator is None:
         return None
-    return status_iterator
+    return todo_iterator
 
 
 # --- END --- #

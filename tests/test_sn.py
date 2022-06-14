@@ -20,7 +20,7 @@ class TestSN(unittest.TestCase):
 
     def setUp(self):
         '''
-        Test initialization of the users and status collections
+        Test initialization of the users and todo collections
         '''
         self.user_col = sn.UserCollection()
         self.assertIsInstance(
@@ -29,11 +29,11 @@ class TestSN(unittest.TestCase):
             msg="Returned object not user_collection"
         )
 
-        self.status_col = sn.UserStatusCollection()
+        self.todo_col = sn.ToDoCollection()
         self.assertIsInstance(
-            self.status_col,
-            sn.UserStatusCollection,
-            msg="Returned object not status_collection"
+            self.todo_col,
+            sn.ToDoCollection,
+            msg="Returned object not todo_collection"
         )
 
     def test_add_user(self):
@@ -70,69 +70,69 @@ class TestSN(unittest.TestCase):
         self.assertTrue( del_success )
 
 
-    def test_add_status(self):
+    def test_add_todo(self):
         self.user_col.add_user( "capra", "capra@uw.edu", "Eddie", "Bosco" )
-        new_status = self.status_col.add_status( "capra", "capra_0007", "HBO Max ads...:-P" )
-        self.assertTrue( new_status )
+        new_todo = self.todo_col.add_todo( "capra", "capra_0007", "HBO Max ads...:-P" )
+        self.assertTrue( new_todo )
 
-    def test_search_status(self):
+    def test_search_todo(self):
         self.user_col.add_user( "bmeau", "bmeau@uw.edu", "Bart", "Muller" )
-        new_status = self.status_col.add_status( "bmeau", "bmeau_0008", "Netflix ads as well" )
-        self.assertTrue( new_status )
-        status = self.status_col.search_status( "bmeau_0008" )
-        self.assertEqual( status.todo_text, "Netflix ads as well" )
+        new_todo = self.todo_col.add_todo( "bmeau", "bmeau_0008", "Netflix ads as well" )
+        self.assertTrue( new_todo )
+        todo = self.todo_col.search_todo( "bmeau_0008" )
+        self.assertEqual( todo.todo_text, "Netflix ads as well" )
 
-    def test_modify_status(self):
+    def test_modify_todo(self):
         self.user_col.add_user( "pfram", "pfram@uw.edu", "Peter", "Frampton" )
-        new_status = self.status_col.add_status( "pfram", "pfram_0001", "I prefer Disney" )
-        self.assertTrue( new_status )
-        mod_success = self.status_col.modify_status( "pfram_0001", "pfram", "I heart Disney" )
+        new_todo = self.todo_col.add_todo( "pfram", "pfram_0001", "I prefer Disney" )
+        self.assertTrue( new_todo )
+        mod_success = self.todo_col.modify_todo( "pfram_0001", "pfram", "I heart Disney" )
         self.assertTrue( mod_success )
 
-    def test_delete_status(self):
+    def test_delete_todo(self):
         self.user_col.add_user( "jimmypage", "jimmyp@uw.edu", "Jimmy", "Page" )
-        new_status = self.status_col.add_status( "jimmypage", "jimmypage_0002", "BBC for me" )
-        self.assertTrue( new_status )
-        del_success = self.status_col.delete_status( "jimmypage_0002" )
+        new_todo = self.todo_col.add_todo( "jimmypage", "jimmypage_0002", "BBC for me" )
+        self.assertTrue( new_todo )
+        del_success = self.todo_col.delete_todo( "jimmypage_0002" )
         self.assertTrue( del_success )
         #
-        # See if we can find the status we deleted
+        # See if we can find the todo we deleted
         #
-        status = self.status_col.search_status( "jimmypage_0002" )
-        self.assertIsNone( status )
+        todo = self.todo_col.search_todo( "jimmypage_0002" )
+        self.assertIsNone( todo )
 
-    def test_delete_status_cascade(self):
+    def test_delete_todo_cascade(self):
         self.user_col.add_user( "rogerd", "rogerd@uw.edu", "Roger", "Daltry" )
-        new_status = self.status_col.add_status( "rogerd", "rogerd_0009", "Can you see the real me?" )
-        self.assertTrue( new_status )
+        new_todo = self.todo_col.add_todo( "rogerd", "rogerd_0009", "Can you see the real me?" )
+        self.assertTrue( new_todo )
         del_success = self.user_col.delete_user( "rogerd" )
         self.assertTrue( del_success )
         #
-        # See if we can find the status we deleted.
+        # See if we can find the todo we deleted.
         #
         # Should have been recursively deleted.
         #
-        status = self.status_col.search_status( "rogerd_0009" )
-        self.assertIsNone( status )
+        todo = self.todo_col.search_todo( "rogerd_0009" )
+        self.assertIsNone( todo )
 
-    def test_search_all_status_updates(self):
+    def test_search_all_todo_updates(self):
         self.user_col.add_user( "maddrox", "maddrox@uw.edu", "Bart", "Muller" )
-        new_status = self.status_col.add_status( "maddrox", "maddrox_0008", "Netflix ads as well" )
-        self.assertTrue( new_status )
-        new_status = self.status_col.add_status( "maddrox", "maddrox_0009", "Amazon Prime has no ads" )
-        self.assertTrue( new_status )
-        status_list = self.status_col.search_all_status_updates( "maddrox" )
-        self.assertIsInstance( status_list, list )
+        new_todo = self.todo_col.add_todo( "maddrox", "maddrox_0008", "Netflix ads as well" )
+        self.assertTrue( new_todo )
+        new_todo = self.todo_col.add_todo( "maddrox", "maddrox_0009", "Amazon Prime has no ads" )
+        self.assertTrue( new_todo )
+        todo_list = self.todo_col.search_all_todo_updates( "maddrox" )
+        self.assertIsInstance( todo_list, list )
 
-    def test_filter_status_by_string(self):
+    def test_filter_todo_by_string(self):
         self.user_col.add_user( "lukec", "lukec@uw.edu", "Luke", "Cage" )
-        new_status = self.status_col.add_status( "lukec", "lukec_0008", "Netflix hosts my show" )
-        self.assertTrue( new_status )
-        new_status = self.status_col.add_status( "lukec", "lukec_0009", "Amazon Prime is too lame to host my show" )
-        self.assertTrue( new_status )
-        status_iterator = self.status_col.filter_status_by_string( "host" )
-        self.assertIsInstance( status_iterator, Iterable )
-        self.assertEquals( len( [ stat.todo_text for stat in status_iterator ] ), 2 )
+        new_todo = self.todo_col.add_todo( "lukec", "lukec_0008", "Netflix hosts my show" )
+        self.assertTrue( new_todo )
+        new_todo = self.todo_col.add_todo( "lukec", "lukec_0009", "Amazon Prime is too lame to host my show" )
+        self.assertTrue( new_todo )
+        todo_iterator = self.todo_col.filter_todo_by_string( "host" )
+        self.assertIsInstance( todo_iterator, Iterable )
+        self.assertEquals( len( [ stat.todo_text for stat in todo_iterator ] ), 2 )
 
 
 # --- END --- #

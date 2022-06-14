@@ -29,15 +29,15 @@ class TestMain(unittest.TestCase):
             msg="Returned object not UserCollection"
         )
 
-    def test_init_status_collection(self):
+    def test_init_todo_collection(self):
         '''
-        Test initialization of the collection of statuses
+        Test initialization of the collection of todos
         '''
-        status_col = main.init_status_collection()
+        todo_col = main.init_todo_collection()
         self.assertIsInstance(
-            status_col,
-            sn.UserStatusCollection,
-            msg="Returned object not UserStatusCollection"
+            todo_col,
+            sn.ToDoCollection,
+            msg="Returned object not ToDoCollection"
         )
 
     def test_1_load_users(self):
@@ -62,29 +62,29 @@ class TestMain(unittest.TestCase):
         user_col = main.init_user_collection()
         self.assertIs( main.load_users( "accounts-bad.csv", user_col ), False)
 
-    def test_2_load_status_updates(self):
+    def test_2_load_todo_updates(self):
         '''
-        Test loading statuses from a CSV into the collection
+        Test loading todos from a CSV into the collection
         '''
-        status_col = main.init_status_collection()
+        todo_col = main.init_todo_collection()
         self.assertIs(
-            main.load_status_updates(
+            main.load_todo_updates(
                 "status_updates_reasonable.csv",
-                status_col
+                todo_col
             ),
             True
         )
 
 
-    def test_load_bad_status_updates(self):
+    def test_load_bad_todo_updates(self):
         '''
-        Test how we handle loading a malformed CSV of statuses
+        Test how we handle loading a malformed CSV of todos
         '''
-        status_col = main.init_status_collection()
+        todo_col = main.init_todo_collection()
         self.assertIs(
-            main.load_status_updates(
+            main.load_todo_updates(
                 "status_updates_bad.csv",
-                status_col
+                todo_col
             ),
             False
         )
@@ -236,15 +236,15 @@ class TestMain(unittest.TestCase):
             msg = "Failed to find user"
         )
 
-    def test_add_status(self):
+    def test_add_todo(self):
         '''
-        Test whether we can add a status to the collection
+        Test whether we can add a todo to the collection
         '''
-        status_col = main.init_status_collection()
+        todo_col = main.init_todo_collection()
         self.assertIs(
-            main.load_status_updates(
+            main.load_todo_updates(
                 "status_updates_reasonable.csv",
-                status_col
+                todo_col
             ),
             True
         )
@@ -252,199 +252,199 @@ class TestMain(unittest.TestCase):
         self.assertIs( main.load_users( "accounts.csv", user_col ), True )
         self.assertIs( main.add_user( "pfram", "pfram@yahoo.com", "Peter", "Frampton", user_col ), True )
         self.assertIs(
-            main.add_status(
+            main.add_todo(
                 "pfram",
                 "pfram_777",
-                "I can has status",
-                status_col
+                "I can has todo",
+                todo_col
             ),
             True
         )
 
-    def test_add_status_fail(self):
+    def test_add_todo_fail(self):
         '''
-        Test whether we fail to add a status when we expect to fail
+        Test whether we fail to add a todo when we expect to fail
         '''
-        status_col = main.init_status_collection()
+        todo_col = main.init_todo_collection()
         self.assertIs(
-            main.load_status_updates(
+            main.load_todo_updates(
                 "status_updates_reasonable.csv",
-                status_col
+                todo_col
             ),
             True
         )
         self.assertIsNot(
-            main.add_status(
+            main.add_todo(
                 "evmiles97",
                 "evmiles97_00002",
                 "Perfect weather for a hiking",
-                status_col
+                todo_col
             ),
             True
         )
 
-    def test_update_status(self):
+    def test_update_todo(self):
         '''
-        Test whether we can update the data for a status
+        Test whether we can update the data for a todo
         '''
-        status_col = main.init_status_collection()
+        todo_col = main.init_todo_collection()
         self.assertIs(
-            main.load_status_updates(
+            main.load_todo_updates(
                 "status_updates_reasonable.csv",
-                status_col
+                todo_col
             ),
             True
         )  
         self.assertIs(
-            main.update_status(
+            main.update_todo(
                 "Isabel.Avivah34_27",
                 "Isabel.Avivah34",
                 "Perfect weather for a skiing",
-                status_col
+                todo_col
             ),
             True
         )
         self.assertIs(
-            main.save_status_updates(
-                "status_updates-with-mod.csv",
-                status_col
+            main.save_todo_updates(
+                "todo_updates-with-mod.csv",
+                todo_col
             ),
             True
         )
 
-    def test_update_status_fail(self):
+    def test_update_todo_fail(self):
         '''
-        Test whether trying to update a status fails when we expect it to
+        Test whether trying to update a todo fails when we expect it to
         '''
-        status_col = main.init_status_collection()
+        todo_col = main.init_todo_collection()
         self.assertIs(
-            main.load_status_updates(
+            main.load_todo_updates(
                 "status_updates_reasonable.csv",
-                status_col
+                todo_col
             ),
             True
         )
         self.assertIsNot(
-            main.update_status(
+            main.update_todo(
                 "cajopa_00001",
                 "cajopa",
-                "I can *have* status",
-                status_col
+                "I can *have* todo",
+                todo_col
             ),
             True
         )
 
-    def test_delete_status(self):
+    def test_delete_todo(self):
         '''
-        Test whether we can delete a status from the collection
+        Test whether we can delete a todo from the collection
         '''
-        status_col = main.init_status_collection()
-        main.load_status_updates( "status_updates_reasonable.csv", status_col )
-        test_status_id = 'Isabel.Avivah34_27'
+        todo_col = main.init_todo_collection()
+        main.load_todo_updates( "status_updates_reasonable.csv", todo_col )
+        test_todo_id = 'Isabel.Avivah34_27'
         self.assertIs(
-            main.delete_status(
-                test_status_id,
-                status_col ),
+            main.delete_todo(
+                test_todo_id,
+                todo_col ),
             True
         )
         self.assertIs(
-            main.save_status_updates(
-                "status_updates-with-delete.csv",
-                status_col
+            main.save_todo_updates(
+                "todo_updates-with-delete.csv",
+                todo_col
             ),
             True
         )
 
-    def test_delete_status_fail(self):
+    def test_delete_todo_fail(self):
         '''
-        Test whether we fail to delete a status when we expect it to fail
+        Test whether we fail to delete a todo when we expect it to fail
         '''
-        status_col = main.init_status_collection()
-        main.load_status_updates( "status_updates_reasonable.csv", status_col )
-        test_status_id = 'evmiles97_0000x'
+        todo_col = main.init_todo_collection()
+        main.load_todo_updates( "status_updates_reasonable.csv", todo_col )
+        test_todo_id = 'evmiles97_0000x'
         self.assertIsNot(
-            main.delete_status(
-                test_status_id, status_col
+            main.delete_todo(
+                test_todo_id, todo_col
             ),
             True
         )
         self.assertIs(
-            main.save_status_updates(
-                "status_updates-with-delete.csv",
-                status_col
+            main.save_todo_updates(
+                "todo_updates-with-delete.csv",
+                todo_col
             ),
             True
         )
 
-    def test_search_status(self):
+    def test_search_todo(self):
         '''
-        Test whether we can find a status that we know is there
+        Test whether we can find a todo that we know is there
         '''
         user_col = main.init_user_collection()
         self.assertTrue( main.load_users( "accounts.csv", user_col ) )
-        status_col = main.init_status_collection()
-        status_data = "status_updates_reasonable.csv"
-        test_status_id = 'Isabel.Avivah34_27'
-        self.assertTrue( main.load_status_updates( status_data, status_col ) )
+        todo_col = main.init_todo_collection()
+        todo_data = "status_updates_reasonable.csv"
+        test_todo_id = 'Isabel.Avivah34_27'
+        self.assertTrue( main.load_todo_updates( todo_data, todo_col ) )
         self.assertIsInstance(
-            main.search_status( test_status_id, status_col ),
+            main.search_todo( test_todo_id, todo_col ),
             sn.ToDoTable,
-            msg = "Failed to find status [" + 
-                  test_status_id + 
+            msg = "Failed to find todo [" + 
+                  test_todo_id + 
                   "] in [" + 
-                  status_data +
+                  todo_data +
                   "]" 
         )
 
-    def test_search_all_status_upates(self):
+    def test_search_all_todo_upates(self):
         '''
-        Test whether we can find all the status updates for a 
+        Test whether we can find all the todo updates for a 
         user that we know has multiple updates.
         '''
         user_col = main.init_user_collection()
         self.assertTrue( main.load_users( "accounts.csv", user_col ) )
-        status_col = main.init_status_collection()
-        status_data = "status_updates_reasonable.csv"
-        self.assertTrue( main.load_status_updates( status_data, status_col ) )
+        todo_col = main.init_todo_collection()
+        todo_data = "status_updates_reasonable.csv"
+        self.assertTrue( main.load_todo_updates( todo_data, todo_col ) )
         test_user_id = 'Tonye.Nella57'
-        list_of_status = main.search_all_status_updates( test_user_id,
-                                                         status_col )
+        list_of_todo = main.search_all_todo_updates( test_user_id,
+                                                         todo_col )
         self.assertIsInstance(
-            list_of_status,
+            list_of_todo,
             list,
-            msg = "main.search_all_status_updates() did not return a list" )
+            msg = "main.search_all_todo_updates() did not return a list" )
 
-    def test_search_all_status_upates(self):
+    def test_search_all_todo_upates(self):
         '''
-        Test whether we can find all the status updates for a 
+        Test whether we can find all the todo updates for a 
         user that we know has multiple updates.
         '''
         user_col = main.init_user_collection()
         self.assertTrue( main.load_users( "accounts.csv", user_col ) )
-        status_col = main.init_status_collection()
-        status_data = "status_updates_reasonable.csv"
-        self.assertTrue( main.load_status_updates( status_data, status_col ) )
+        todo_col = main.init_todo_collection()
+        todo_data = "status_updates_reasonable.csv"
+        self.assertTrue( main.load_todo_updates( todo_data, todo_col ) )
         test_target_text = 'zebra'
-        status_iterator = main.filter_status_by_string( test_target_text,
-                                                        status_col )
+        todo_iterator = main.filter_todo_by_string( test_target_text,
+                                                        todo_col )
         self.assertIsInstance(
-            status_iterator,
+            todo_iterator,
             Iterable,
-            msg = "main.filter_status_by_string did not return an iterator" )
-        self.assertEquals( len( [ stat for stat in status_iterator ] ), 3 )
+            msg = "main.filter_todo_by_string did not return an iterator" )
+        self.assertEquals( len( [ stat for stat in todo_iterator ] ), 3 )
 
 
-    def test_search_status_fail(self):
+    def test_search_todo_fail(self):
         '''
-        Test whether we fail to find a status that we know is not there
+        Test whether we fail to find a todo that we know is not there
         '''
-        status_col = main.init_status_collection()
-        main.load_status_updates( "status_updates_reasonable.csv", status_col )
-        test_status_id = 'evmiles97_0000x'
+        todo_col = main.init_todo_collection()
+        main.load_todo_updates( "status_updates_reasonable.csv", todo_col )
+        test_todo_id = 'evmiles97_0000x'
         self.assertNotIsInstance(
-            main.search_status( test_status_id, status_col ),
+            main.search_todo( test_todo_id, todo_col ),
             sn.ToDoTable,
-            msg = "Failed to find status"
+            msg = "Failed to find todo"
         )
 
 

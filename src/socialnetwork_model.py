@@ -231,57 +231,57 @@ class UserCollection():
             return None
 
 
-class UserStatusCollection():
+class ToDoCollection():
     '''
-    Class to organize methods that operate on statuses.
+    Class to organize methods that operate on todos.
     '''
 
     def __init__(self):
-        logger.debug( "Initialize UserStatusCollection" )
+        logger.debug( "Initialize ToDoCollection" )
 
-    def add_status( self, new_status_user_id, new_todo_id, new_todo_text ):
+    def add_todo( self, new_todo_user_id, new_todo_id, new_todo_text ):
         '''
-        add a new status message to the collection
+        add a new todo message to the collection
         '''
         logger.debug( "Entering method" )
         logger.debug( "Param: new_todo_id: " + new_todo_id )
 
-        if self.search_status( new_todo_id ):
-            logger.debug( "Status already in database" )
+        if self.search_todo( new_todo_id ):
+            logger.debug( "ToDo already in database" )
             return False
 
         try:
             with db.transaction():
-                new_status = ToDoTable.create(
+                new_todo = ToDoTable.create(
                     todo_id = new_todo_id,
-                    user_id = new_status_user_id,
+                    user_id = new_todo_user_id,
                     todo_text = new_todo_text,
                 )
-                new_status.save()
+                new_todo.save()
 
         except ( pw.DatabaseError,
                  pw.IntegrityError,
                  pw.NotSupportedError ) as db_exception:
-            logger.info(f'Error creating status = {new_todo_id}')
+            logger.info(f'Error creating todo = {new_todo_id}')
             logger.info(db_exception)
             return False
 
         else:
-            logger.debug( "Status added" )
+            logger.debug( "ToDo added" )
             return True
 
-    def modify_status( self, mod_todo_id, user_id, mod_todo_text ):
+    def modify_todo( self, mod_todo_id, user_id, mod_todo_text ):
         '''
-        Modifies an existing status
+        Modifies an existing todo
         '''
         logger.debug( "Entering method" )
         logger.debug( "Param: mod_todo_id: " + mod_todo_id )
         logger.debug( "Param: mod_todo_text: " + mod_todo_text )
 
-        status_to_mod = self.search_status( mod_todo_id )
+        todo_to_mod = self.search_todo( mod_todo_id )
 
-        if status_to_mod is None:
-            logger.debug( "Status not in database" )
+        if todo_to_mod is None:
+            logger.debug( "ToDo not in database" )
             return False
 
         try:
@@ -292,21 +292,21 @@ class UserStatusCollection():
                     and ( ToDoTable.user_id == user_id ) ).execute()  # noqa: E501 W503
 
             logger.debug(
-                "status_to_mod.todo_text: ", status_to_mod.todo_text
+                "todo_to_mod.todo_text: ", todo_to_mod.todo_text
             )
 
         except ( pw.DatabaseError,
                  pw.IntegrityError,
                  pw.NotSupportedError ) as db_exception:
-            logger.info(f'Error modifying status = {mod_todo_id}')
+            logger.info(f'Error modifying todo = {mod_todo_id}')
             logger.info(db_exception)
 
         logger.debug( "User updated" )
         return True
 
-    def delete_status( self, delete_todo_id ):
+    def delete_todo( self, delete_todo_id ):
         '''
-        Deletes a status from status_collection.
+        Deletes a todo from todo_collection.
 
         Requirements:
         - Returns False if there are any errors (such as todo_id not found)
@@ -314,15 +314,15 @@ class UserStatusCollection():
         '''
         logger.debug( "Entering function" )
 
-        status_to_del = self.search_status( delete_todo_id )
+        todo_to_del = self.search_todo( delete_todo_id )
 
-        if status_to_del is None:
-            logger.debug( "Status not in database" )
+        if todo_to_del is None:
+            logger.debug( "ToDo not in database" )
             return False
 
         try:
             with db.transaction():
-                status_to_del.delete_instance(
+                todo_to_del.delete_instance(
                     #
                     # Ensure that we delete any dependent rows
                     #
@@ -330,101 +330,101 @@ class UserStatusCollection():
                 )
 
             logger.debug(
-                "status_to_del.todo_text: ", status_to_del.todo_text
+                "todo_to_del.todo_text: ", todo_to_del.todo_text
             )
 
         except ( pw.DatabaseError,
                  pw.IntegrityError,
                  pw.NotSupportedError ) as db_exception:
-            logger.info(f'Error deleting status = {delete_todo_id}')
+            logger.info(f'Error deleting todo = {delete_todo_id}')
             logger.info(db_exception)
             return False
 
         else:
-            logger.debug( "Status deleted" )
+            logger.debug( "ToDo deleted" )
             return True
 
-    def search_status( self, todo_id ):
+    def search_todo( self, todo_id ):
         '''
-        Searches for status data
+        Searches for todo data
         '''
         logger.debug( "Entering method" )
         logger.debug( "Param: todo_id: " + todo_id )
 
         try:
-            status = ToDoTable.get_or_none(
+            todo = ToDoTable.get_or_none(
                 ToDoTable.todo_id == todo_id )
 
         except ( pw.DatabaseError,
                  pw.IntegrityError,
                  pw.NotSupportedError ) as db_exception:
-            logger.info(f'Error searching for status = {todo_id}')
+            logger.info(f'Error searching for todo = {todo_id}')
             logger.info(db_exception)
 
         else:
-            if status:
-                logger.debug( "Status ID found" )
-                return status
-            logger.debug( "Status ID not in database" )
+            if todo:
+                logger.debug( "ToDo ID found" )
+                return todo
+            logger.debug( "ToDo ID not in database" )
             return None
 
-    def search_all_status_updates( self, user_id ):
+    def search_all_todo_updates( self, user_id ):
         '''
-        Returns all the status updates for a specified user.
+        Returns all the todo updates for a specified user.
 
         Requirements:
         - If the user is found, returns the corresponding
-          UserStatus instances as a list.
+          ToDo instances as a list.
         - Otherwise, it returns None.
         '''
         logger.debug( "Entering method" )
         logger.debug( "Param: user_id: " + user_id )
 
         try:
-            status_list = ToDoTable.select().where(
+            todo_list = ToDoTable.select().where(
                 ToDoTable.user_id == user_id )
 
         except ( pw.DatabaseError,
                  pw.IntegrityError,
                  pw.NotSupportedError ) as db_exception:
-            logger.info(f'Error searching for statuses for {user_id}')
+            logger.info(f'Error searching for todos for {user_id}')
             logger.info(db_exception)
 
         else:
-            if status_list:
-                logger.debug( "Statuses for " + user_id + " found" )
+            if todo_list:
+                logger.debug( "Todos for " + user_id + " found" )
                 # pylint: disable=not-an-iterable
-                return [ status.todo_text for status in status_list ]
+                return [ todo.todo_text for todo in todo_list ]
             logger.debug( "User ID: " + user_id + " not in database" )
             return None
 
-    def filter_status_by_string( self, target_string: str ):
+    def filter_todo_by_string( self, target_string: str ):
         '''
-        Returns all the status updates for a specified user.
+        Returns all the todo updates for a specified user.
 
         Requirements:
-        - Returns an iterator to all status updates that contain the
-          specified string. Note that there might not be any such status
+        - Returns an iterator to all todo updates that contain the
+          specified string. Note that there might not be any such todo
           updates . . . :-O
         '''
         logger.debug( "Entering method" )
         logger.debug( "Param: target_string: " + target_string )
 
         try:
-            status_iterator = ToDoTable.select() \
+            todo_iterator = ToDoTable.select() \
                 .where( ToDoTable.todo_text.contains( target_string )) \
                 .iterator()
 
         except ( pw.DatabaseError,
                  pw.IntegrityError,
                  pw.NotSupportedError ) as db_exception:
-            logger.info(f'Error searching for statuses {target_string}')
+            logger.info(f'Error searching for todos {target_string}')
             logger.info(db_exception)
 
         else:
-            if status_iterator:
+            if todo_iterator:
                 logger.debug( "Iterator for " + target_string + " retrieved" )
-                return status_iterator
+                return todo_iterator
             logger.debug( "Could not retrieve iterator for {target_string}" )
             return None
 
