@@ -386,10 +386,9 @@ class TestMain(unittest.TestCase):
         status_data = "status_updates_reasonable.csv"
         test_status_id = 'Isabel.Avivah34_27'
         self.assertTrue( main.load_status_updates( status_data, status_col ) )
-        breakpoint();
         self.assertIsInstance(
             main.search_status( test_status_id, status_col ),
-            sn.StatusTable,
+            sn.ToDoTable,
             msg = "Failed to find status [" + 
                   test_status_id + 
                   "] in [" + 
@@ -444,7 +443,7 @@ class TestMain(unittest.TestCase):
         test_status_id = 'evmiles97_0000x'
         self.assertNotIsInstance(
             main.search_status( test_status_id, status_col ),
-            sn.StatusTable,
+            sn.ToDoTable,
             msg = "Failed to find status"
         )
 
