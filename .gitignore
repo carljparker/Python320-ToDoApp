@@ -8,6 +8,10 @@ status_updates-with-mod.csv
 status_updates-with-delete.csv
 accounts-with-deleted-alcon.csv
 status_updates-with-deletion.csv
+#
+# The social media database
+# 
+sn.db
 
 
 #
