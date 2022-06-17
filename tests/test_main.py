@@ -96,28 +96,6 @@ class TestMain(unittest.TestCase):
             True
         )
 
-    def test_add_todo_fail(self):
-        '''
-        Test whether we fail to add a todo when we expect to fail
-        '''
-        todo_col = main.init_todo_collection()
-        self.assertIs(
-            main.load_todo_updates(
-                "status_updates_reasonable.csv",
-                todo_col
-            ),
-            True
-        )
-        self.assertIsNot(
-            main.add_todo(
-                "evmiles97",
-                "evmiles97_00002",
-                "Perfect weather for a hiking",
-                todo_col
-            ),
-            True
-        )
-
     def test_update_todo(self):
         '''
         Test whether we can update the data for a todo

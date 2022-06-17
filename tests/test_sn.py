@@ -101,20 +101,6 @@ class TestSN(unittest.TestCase):
         todo = self.todo_col.search_todo( "jimmypage_0002" )
         self.assertIsNone( todo )
 
-    def test_delete_todo_cascade(self):
-        self.user_col.add_user( "rogerd", "rogerd@uw.edu", "Roger", "Daltry" )
-        new_todo = self.todo_col.add_todo( "rogerd", "rogerd_0009", "Can you see the real me?" )
-        self.assertTrue( new_todo )
-        del_success = self.user_col.delete_user( "rogerd" )
-        self.assertTrue( del_success )
-        #
-        # See if we can find the todo we deleted.
-        #
-        # Should have been recursively deleted.
-        #
-        todo = self.todo_col.search_todo( "rogerd_0009" )
-        self.assertIsNone( todo )
-
     def test_search_all_todo_updates(self):
         self.user_col.add_user( "maddrox", "maddrox@uw.edu", "Bart", "Muller" )
         new_todo = self.todo_col.add_todo( "maddrox", "maddrox_0008", "Netflix ads as well" )

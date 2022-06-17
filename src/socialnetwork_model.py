@@ -84,10 +84,11 @@ class ToDoTable( BaseModel ):
                                   pw.Check("LENGTH(todo_id) < 30")
                               ]
                               )
-    user_id = pw.ForeignKeyField( UsersTable,
-                                  backref='posted_by',
-                                  null = False
-                                  )
+    user_id = pw.CharField( max_length = 30,
+                              constraints=[
+                                  pw.Check("LENGTH(user_id) < 30")
+                              ]
+                              )
     todo_text = pw.CharField( max_length = 128,
                                 constraints=[
                                     pw.Check("LENGTH(todo_text) < 128")
