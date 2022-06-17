@@ -30,7 +30,7 @@ logger.add( "log_{time:YYYY-MM-DD}.log",
             format=LOG_FORMAT,
             level="DEBUG" )
 
-db = pw.SqliteDatabase('sn.db')
+db = pw.SqliteDatabase('td.db')
 
 
 class BaseModel( pw.Model ):
