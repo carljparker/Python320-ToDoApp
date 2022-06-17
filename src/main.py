@@ -51,57 +51,6 @@ def init_todo_collection():
     return todo_col
 
 
-def load_users(filename, user_collection):
-    '''
-    Opens a CSV file with user data and
-    adds it to an existing instance of
-    UserCollection
-
-    Requirements:
-    - If a user_id already exists, it
-    will ignore it and continue to the
-    next.
-    - Returns False if there are any errors
-    (such as empty fields in the source CSV file)
-    - Otherwise, it returns True.
-    '''
-    logger.debug( "Entering function" )
-    logger.debug( "Param: filename: " + filename )
-    logger.debug( "Param: user_collection: " + str( type( user_collection ) ) )
-
-    with open(filename, newline='', encoding="utf-8") as csvfile:
-        reader = csv.DictReader(csvfile)
-        #
-        # USER_ID, EMAIL, NAME, LASTNAME
-        #
-        for row in reader:
-            if search_user( row['USER_ID'], user_collection ) is None:
-                #
-                # Check for missing attributes
-                #
-                for user_attr in row.values():
-                    if not user_attr:
-                        return False
-                user_collection.add_user(
-                    row['USER_ID'],
-                    row['EMAIL'],
-                    row['NAME'],
-                    row['LASTNAME']
-                )
-            else:
-                continue
-    return True
-
-
-def save_users(filename, user_collection):  # pylint:disable=unused-argument
-    '''
-    This function is now a stub
-    '''
-    logger.debug( "Entering function" )
-    logger.debug( "This function is now stub" )
-    return True
-
-
 def load_todo_updates(filename, todo_collection):
     '''
     Opens a CSV file with todo data and adds it to an existing
@@ -145,29 +94,6 @@ def save_todo_updates(filename, todo_collection):  # pylint:disable=unused-argum
     logger.debug( "Entering function" )
     logger.debug( "This function is now stub" )
     return True
-
-
-def add_user(user_id, email, user_name, user_last_name, user_collection):
-    '''
-    Creates a new instance of User and stores it in user_collection
-    (which is an instance of UserCollection)
-
-    Requirements:
-    - user_id cannot already exist in user_collection.
-    - Returns False if there are any errors (for example, if
-      user_collection.add_user() returns False).
-    - Otherwise, it returns True.
-    '''
-    logger.debug( "Entering function" )
-    if search_user( user_id, user_collection ) is None:
-        return user_collection.add_user(
-            user_id,
-            email,
-            user_name,
-            user_last_name
-        )
-    logger.error( "User already in database" )
-    return False
 
 
 def search_user(user_id, user_collection):
