@@ -15,15 +15,6 @@ logger.add( sys.stderr, format="STDERR: {time:YYYY-MM-DD @ HH:mm:ss} | {level} |
 logger.add( "log_{time:YYYY-MM-DD}.log", format="LOGFILE: {time:YYYY-MM-DD @ HH:mm:ss} | {level} | {file} : {function} : {line} : {message}", level="DEBUG" )
 
 
-def load_users():
-    '''
-    Loads user accounts from a file
-    '''
-    logger.debug( "Entering function" )
-    filename = input('Enter filename of user file: ')
-    main.load_users(filename, user_collection)
-
-
 def load_todo_updates():
     '''
     Loads todo updates from a file
@@ -31,15 +22,6 @@ def load_todo_updates():
     logger.debug( "Entering function" )
     filename = input('Enter filename for todo file: ')
     main.load_todo_updates(filename, todo_collection)
-
-
-def save_users():
-    '''
-    Saves user database into a file
-    '''
-    logger.debug( "Entering function" )
-    filename = input('Enter filename for users file: ')
-    main.save_users(filename, user_collection)
 
 
 def add_todo():
@@ -196,7 +178,6 @@ if __name__ == '__main__':
     user_collection = main.init_user_collection()
     todo_collection = main.init_todo_collection()
     menu_options = {
-        'A': load_users,
         'B': load_todo_updates,
         'H': add_todo,
         'I': update_todo,
@@ -210,9 +191,7 @@ if __name__ == '__main__':
     }
     while True:
         user_selection = input("""
-                            A: Load user database
                             B: Load todo database
-                            G: Save user database to file
                             H: Add todo
                             I: Update todo
                             J: Search todo
