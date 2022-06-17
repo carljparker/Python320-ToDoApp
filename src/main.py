@@ -33,14 +33,6 @@ logger.add( "log_{time:YYYY-MM-DD}.log",
             format=LOG_FORMAT,
             level="DEBUG" )
 
-def init_user_collection():
-    '''
-    Creates and returns a new instance of UserCollection
-    '''
-    logger.debug( "Entering function" )
-    user_col = sn.UserCollection()
-    return user_col
-
 
 def init_todo_collection():
     '''
@@ -94,27 +86,6 @@ def save_todo_updates(filename, todo_collection):  # pylint:disable=unused-argum
     logger.debug( "Entering function" )
     logger.debug( "This function is now stub" )
     return True
-
-
-def search_user(user_id, user_collection):
-    '''
-    Searches for a user in user_collection(which is an instance of
-    UserCollection).
-
-    Requirements:
-    - If the user is found, returns the corresponding User instance.
-    - Otherwise, it returns None.
-    '''
-    logger.debug( "Entering function" )
-    logger.debug( "Param: user_id: " + user_id )
-    logger.debug( "Param: user_collection: " + str( type( user_collection ) ) )
-    search_result = user_collection.search_user(user_id)
-    if search_result is None:
-        logger.debug( "Could not find user in database" )
-        return None
-    logger.debug( "User found: " + search_result.user_id )
-    logger.debug( "Type found: " + str( type( search_result ) ) )
-    return search_result
 
 
 def add_todo(user_id, todo_id, todo_text, todo_collection):

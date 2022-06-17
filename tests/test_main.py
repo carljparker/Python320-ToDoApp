@@ -18,16 +18,6 @@ class TestMain(unittest.TestCase):
     '''
     Class definition for unit tests for main.py
     '''
-    def test_init_user_collection(self):
-        '''
-        Test initialization of the collection of users
-        '''
-        user_col = main.init_user_collection()
-        self.assertIsInstance(
-            user_col,
-            sn.UserCollection,
-            msg="Returned object not UserCollection"
-        )
 
     def test_init_todo_collection(self):
         '''

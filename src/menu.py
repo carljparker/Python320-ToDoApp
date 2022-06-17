@@ -175,7 +175,6 @@ def quit_program():
 
 if __name__ == '__main__':
     logger.debug( "Program start" )
-    user_collection = main.init_user_collection()
     todo_collection = main.init_todo_collection()
     menu_options = {
         'B': load_todo_updates,
