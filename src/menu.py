@@ -33,74 +33,6 @@ def load_todo_updates():
     main.load_todo_updates(filename, todo_collection)
 
 
-def add_user():
-    '''
-    Adds a new user into the database
-    '''
-    logger.debug( "Entering function" )
-    user_id = input('User ID: ')
-    email = input('User email: ')
-    user_name = input('User name: ')
-    user_last_name = input('User last name: ')
-    if not main.add_user(user_id,
-                         email,
-                         user_name,
-                         user_last_name,
-                         user_collection):
-        print("An error occurred while trying to add new user")
-    else:
-        print("User was successfully added")
-
-
-def update_user():
-    '''
-    Updates information for an existing user
-    '''
-    logger.debug( "Entering function" )
-    user_id = input('User ID: ')
-    email = input('User email: ')
-    user_name = input('User name: ')
-    user_last_name = input('User last name: ')
-    if not main.update_user(
-        user_id,
-        email,
-        user_name,
-        user_last_name,
-        user_collection
-    ):
-        print("An error occurred while trying to update user")
-    else:
-        print("User was successfully updated")
-
-
-def search_user():
-    '''
-    Searches a user in the database
-    '''
-    logger.debug( "Entering function" )
-    user_id = input('Enter user ID to search: ')
-    result = main.search_user(user_id, user_collection)
-    if not result:
-        print("ERROR: User does not exist")
-    else:
-        print(f"User ID: {result.user_id}")
-        print(f"Email: {result.email}")
-        print(f"Name: {result.user_name}")
-        print(f"Last name: {result.user_last_name}")
-
-
-def delete_user():
-    '''
-    Deletes user from the database
-    '''
-    logger.debug( "Entering function" )
-    user_id = input('User ID: ')
-    if not main.delete_user(user_id, user_collection):
-        print("An error occurred while trying to delete user")
-    else:
-        print("User was successfully deleted")
-
-
 def save_users():
     '''
     Saves user database into a file
@@ -266,11 +198,6 @@ if __name__ == '__main__':
     menu_options = {
         'A': load_users,
         'B': load_todo_updates,
-        'C': add_user,
-        'D': update_user,
-        'E': search_user,
-        'F': delete_user,
-        'G': save_users,
         'H': add_todo,
         'I': update_todo,
         'J': search_todo,
@@ -285,10 +212,6 @@ if __name__ == '__main__':
         user_selection = input("""
                             A: Load user database
                             B: Load todo database
-                            C: Add user
-                            D: Update user
-                            E: Search user
-                            F: Delete user
                             G: Save user database to file
                             H: Add todo
                             I: Update todo
