@@ -24,13 +24,13 @@ def load_users():
     main.load_users(filename, user_collection)
 
 
-def load_status_updates():
+def load_todo_updates():
     '''
-    Loads status updates from a file
+    Loads todo updates from a file
     '''
     logger.debug( "Entering function" )
-    filename = input('Enter filename for status file: ')
-    main.load_status_updates(filename, status_collection)
+    filename = input('Enter filename for todo file: ')
+    main.load_todo_updates(filename, todo_collection)
 
 
 def add_user():
@@ -110,146 +110,146 @@ def save_users():
     main.save_users(filename, user_collection)
 
 
-def add_status():
+def add_todo():
     '''
-    Adds a new status into the database
-    '''
-    logger.debug( "Entering function" )
-    user_id = input('User ID: ')
-    status_id = input('Status ID: ')
-    status_text = input('Status text: ')
-    if not main.add_status(user_id, status_id, status_text, status_collection):
-        print("An error occurred while trying to add new status")
-    else:
-        print("New status was successfully added")
-
-
-def update_status():
-    '''
-    Updates information for an existing status
+    Adds a new todo into the database
     '''
     logger.debug( "Entering function" )
     user_id = input('User ID: ')
-    status_id = input('Status ID: ')
-    status_text = input('Status text: ')
-    if not main.update_status(status_id, user_id, status_text,
-                              status_collection):
-        print("An error occurred while trying to update status")
+    todo_id = input('ToDo ID: ')
+    todo_text = input('ToDo text: ')
+    if not main.add_todo(user_id, todo_id, todo_text, todo_collection):
+        print("An error occurred while trying to add new todo")
     else:
-        print("Status was successfully updated")
+        print("New todo was successfully added")
 
 
-def search_status():
+def update_todo():
     '''
-    Searches a status in the database
+    Updates information for an existing todo
     '''
     logger.debug( "Entering function" )
-    status_id = input('Enter status ID to search: ')
-    result = main.search_status(status_id, status_collection)
+    user_id = input('User ID: ')
+    todo_id = input('ToDo ID: ')
+    todo_text = input('ToDo text: ')
+    if not main.update_todo(todo_id, user_id, todo_text,
+                              todo_collection):
+        print("An error occurred while trying to update todo")
+    else:
+        print("ToDo was successfully updated")
+
+
+def search_todo():
+    '''
+    Searches a todo in the database
+    '''
+    logger.debug( "Entering function" )
+    todo_id = input('Enter todo ID to search: ')
+    result = main.search_todo(todo_id, todo_collection)
     if not result:
-        print("ERROR: Status does not exist")
+        print("ERROR: ToDo does not exist")
     else:
         print(f"User ID: {result.user_id}")
-        print(f"Status ID: {result.status_id}")
-        print(f"Status text: {result.status_text}")
+        print(f"ToDo ID: {result.todo_id}")
+        print(f"ToDo text: {result.todo_text}")
 
 
-def delete_status():
+def delete_todo():
     '''
-    Deletes status from the database
+    Deletes todo from the database
     '''
     logger.debug( "Entering function" )
-    status_id = input('Status ID: ')
-    if not main.delete_status(status_id, status_collection):
-        print("An error occurred while trying to delete status")
+    todo_id = input('ToDo ID: ')
+    if not main.delete_todo(todo_id, todo_collection):
+        print("An error occurred while trying to delete todo")
     else:
-        print("Status was successfully deleted")
+        print("ToDo was successfully deleted")
 
 
-def save_status():
+def save_todo():
     '''
-    Saves status database into a file
+    Saves todo database into a file
     '''
     logger.debug( "Entering function" )
-    filename = input('Enter filename for status file: ')
-    main.save_status_updates(filename, status_collection)
+    filename = input('Enter filename for todo file: ')
+    main.save_todo_updates(filename, todo_collection)
 
-def status_generator( query_result_list ):
+def todo_generator( query_result_list ):
     '''
     Take a list and turn it into a generator
     '''
     logger.debug( "Entering function" )
     assert len( query_result_list )
 
-    for status in query_result_list:
-        yield status
+    for todo in query_result_list:
+        yield todo
 
-def search_all_status_updates():
+def search_all_todo_updates():
     '''
-    Searches a status in the database
+    Searches a todo in the database
     '''
     logger.debug( "Entering function" )
-    user_id = input('Enter user ID for statuses to retrieve: ')
-    query_result_list = main.search_all_status_updates(user_id, status_collection)
-    status_gen = status_generator( query_result_list )
+    user_id = input('Enter user ID for todos to retrieve: ')
+    query_result_list = main.search_all_todo_updates(user_id, todo_collection)
+    todo_gen = todo_generator( query_result_list )
 
     if not query_result_list:
-        print("ERROR: No statuses found" )
+        print("ERROR: No todos found" )
     else:
-        print( f"A total of {str( len( query_result_list ) )} status updates found for {user_id}" )
+        print( f"A total of {str( len( query_result_list ) )} todo updates found for {user_id}" )
         while True:
             user_response = input('Would you like to see the next update? (Y/N): ')
             if user_response.upper() == "Y":
                 try:
-                    print( next( status_gen ) )
+                    print( next( todo_gen ) )
 
                 except StopIteration:
-                    print( "No more status updates . . . :-(" )
+                    print( "No more todo updates . . . :-(" )
                     break
             else:
                 break
 
-def filter_status_by_string():
+def filter_todo_by_string():
     '''
-    Searches a status in the database
+    Searches a todo in the database
     '''
     logger.debug( "Entering function" )
-    target_text = input('Enter status text on which to filter: ')
-    status_iterator = main.filter_status_by_string( target_text, status_collection)
+    target_text = input('Enter todo text on which to filter: ')
+    todo_iterator = main.filter_todo_by_string( target_text, todo_collection)
 
-    if not status_iterator:
+    if not todo_iterator:
         print("ERROR: No iterator returned" )
     else:
         while True:
-            user_response = input('Review the next status? (Y/N): ')
+            user_response = input('Review the next todo? (Y/N): ')
             if user_response.upper() == "Y":
                 try:
-                    current_status = next( status_iterator )
-                    print( current_status.status_text )
-                    delete_response = input('Delete this status? (Y/N): ')
+                    current_todo = next( todo_iterator )
+                    print( current_todo.todo_text )
+                    delete_response = input('Delete this todo? (Y/N): ')
                     if delete_response.upper() == "Y":
-                        main.delete_status( current_status.status_id, status_collection )
+                        main.delete_todo( current_todo.todo_id, todo_collection )
 
                 except StopIteration:
-                    print( "No more status updates . . . :-(" )
+                    print( "No more todo updates . . . :-(" )
                     break
             else:
                 break
 
-def flagged_status_updates():
+def flagged_todo_updates():
     '''
-    Searches a status in the database
+    Searches a todo in the database
     '''
     logger.debug( "Entering function" )
-    target_text = input('Enter status text for flagging: ')
-    status_iterator = main.filter_status_by_string( target_text, status_collection)
+    target_text = input('Enter todo text for flagging: ')
+    todo_iterator = main.filter_todo_by_string( target_text, todo_collection)
 
     # pylint: disable=expression-not-assigned
-    if not status_iterator:
+    if not todo_iterator:
         print("ERROR: No iterator returned" )
     else:
-        [ print( str( statu.status_id ) + ": " + statu.status_text )
-          for statu in status_iterator ]
+        [ print( str( statu.todo_id ) + ": " + statu.todo_text )
+          for statu in todo_iterator ]
 
 def quit_program():
     '''
@@ -262,42 +262,42 @@ def quit_program():
 if __name__ == '__main__':
     logger.debug( "Program start" )
     user_collection = main.init_user_collection()
-    status_collection = main.init_status_collection()
+    todo_collection = main.init_todo_collection()
     menu_options = {
         'A': load_users,
-        'B': load_status_updates,
+        'B': load_todo_updates,
         'C': add_user,
         'D': update_user,
         'E': search_user,
         'F': delete_user,
         'G': save_users,
-        'H': add_status,
-        'I': update_status,
-        'J': search_status,
-        'K': delete_status,
-        'L': save_status,
-        'M': search_all_status_updates,
-        'N': filter_status_by_string,
-        'O': flagged_status_updates,
+        'H': add_todo,
+        'I': update_todo,
+        'J': search_todo,
+        'K': delete_todo,
+        'L': save_todo,
+        'M': search_all_todo_updates,
+        'N': filter_todo_by_string,
+        'O': flagged_todo_updates,
         'Q': quit_program
     }
     while True:
         user_selection = input("""
                             A: Load user database
-                            B: Load status database
+                            B: Load todo database
                             C: Add user
                             D: Update user
                             E: Search user
                             F: Delete user
                             G: Save user database to file
-                            H: Add status
-                            I: Update status
-                            J: Search status
-                            K: Delete status
-                            L: Save status database to file
-                            M: Search all status updates
-                            N: Filter status updates by string
-                            O: Show all flagged status updates
+                            H: Add todo
+                            I: Update todo
+                            J: Search todo
+                            K: Delete todo
+                            L: Save todo database to file
+                            M: Search all todo updates
+                            N: Filter todo updates by string
+                            O: Show all flagged todo updates
                             Q: Quit
 
                             Please enter your choice: """)
