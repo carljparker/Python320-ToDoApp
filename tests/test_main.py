@@ -83,9 +83,6 @@ class TestMain(unittest.TestCase):
             ),
             True
         )
-        user_col = main.init_user_collection()
-        self.assertIs( main.load_users( "accounts.csv", user_col ), True )
-        self.assertIs( main.add_user( "pfram", "pfram@yahoo.com", "Peter", "Frampton", user_col ), True )
         self.assertIs(
             main.add_todo(
                 "pfram",
@@ -193,8 +190,6 @@ class TestMain(unittest.TestCase):
         '''
         Test whether we can find a todo that we know is there
         '''
-        user_col = main.init_user_collection()
-        self.assertTrue( main.load_users( "accounts.csv", user_col ) )
         todo_col = main.init_todo_collection()
         todo_data = "status_updates_reasonable.csv"
         test_todo_id = 'Isabel.Avivah34_27'
@@ -209,6 +204,7 @@ class TestMain(unittest.TestCase):
                   "]" 
         )
 
+    @unittest.skip("Skip because might be able to repurpose")
     def test_search_all_todo_upates(self):
         '''
         Test whether we can find all the todo updates for a 
@@ -232,8 +228,6 @@ class TestMain(unittest.TestCase):
         Test whether we can find all the todo updates for a 
         user that we know has multiple updates.
         '''
-        user_col = main.init_user_collection()
-        self.assertTrue( main.load_users( "accounts.csv", user_col ) )
         todo_col = main.init_todo_collection()
         todo_data = "status_updates_reasonable.csv"
         self.assertTrue( main.load_todo_updates( todo_data, todo_col ) )
