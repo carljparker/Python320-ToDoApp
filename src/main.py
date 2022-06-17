@@ -170,47 +170,6 @@ def add_user(user_id, email, user_name, user_last_name, user_collection):
     return False
 
 
-def update_user(user_id, email, user_name, user_last_name, user_collection):
-    '''
-    Updates the values of an existing user
-
-    Requirements:
-    - Returns False if there any errors.
-    - Otherwise, it returns True.
-    '''
-    logger.debug( "Entering function" )
-    if search_user( user_id, user_collection ) is not None:
-        user_collection.modify_user(
-            user_id,
-            email,
-            user_name,
-            user_last_name
-        )
-        return True
-    #
-    # A user with that ID doesn't exist, so cannot update
-    #
-    logger.error( "No user found with that ID" )
-    return False
-
-
-def delete_user(user_id, user_collection):
-    '''
-    Deletes a user from user_collection.
-
-    Requirements:
-    - Returns False if there are any errors (such as user_id not found)
-    - Otherwise, it returns True.
-    '''
-    logger.debug( "Entering function" )
-    user_to_delete = search_user( user_id, user_collection )
-    if user_to_delete is None:
-        logger.error( "No user found with that ID" )
-        return False
-    user_collection.delete_user( user_id )
-    return True
-
-
 def search_user(user_id, user_collection):
     '''
     Searches for a user in user_collection(which is an instance of

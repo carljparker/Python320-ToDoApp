@@ -47,14 +47,6 @@ class TestMain(unittest.TestCase):
         user_col = main.init_user_collection()
         self.assertIs( main.load_users( "accounts.csv", user_col ), True )
 
-    def test_save_users(self):
-        '''
-        Test saving users from the collection to a CSV
-        '''
-        user_col = main.init_user_collection()
-        main.load_users( "accounts.csv", user_col )
-        self.assertIs( main.save_users( "accounts-new.csv", user_col), True )
-
     def test_load_bad_users(self):
         '''
         Test how we handle loading a malformed CSV of users
@@ -136,79 +128,6 @@ class TestMain(unittest.TestCase):
             True
         )
 
-    def test_update_user(self):
-        '''
-        Test whether we can update the data for a user
-        '''
-        user_col = main.init_user_collection()
-        self.assertIs( main.load_users( "accounts.csv", user_col ), True )
-        self.assertIs(
-            #
-            # Ms Miles got married and changed her last name
-            #
-            main.update_user(
-                "evmiles97",
-                "eve.miles@uw.edu",
-                "Eve",
-                "Kilos",
-                user_col
-            ),
-            True
-        )
-        return True
-
-    def test_update_user_fail(self):
-        '''
-        Test whether the code to add a user fails appropriately
-        '''
-        user_col = main.init_user_collection()
-        self.assertIs( main.load_users( "accounts.csv", user_col ), True )
-        self.assertIsNot(
-            #
-            # Ms Miles got married and changed her last name
-            #
-            main.update_user(
-                "evmiles9x",
-                "eve.miles@uw.edu",
-                "Eve",
-                "Kilos",
-                user_col
-            ),
-            True
-        )
-        return True
-
-    def test_delete_user(self):
-        '''
-        Test whether we can delete a user from the collection
-        '''
-        user_col = main.init_user_collection()
-        main.load_users( "accounts.csv", user_col )
-        test_user_id = 'Isabel.Avivah34'
-        self.assertIs( main.delete_user( test_user_id, user_col ), True )
-        self.assertIs(
-            main.save_users(
-                "accounts-with-delete.csv",
-                user_col
-            ),
-            True
-        )
-
-    def test_delete_user_fail(self):
-        '''
-        Test whether the code to delete a user fails when we expect it to
-        '''
-        user_col = main.init_user_collection()
-        main.load_users( "accounts.csv", user_col )
-        test_user_id = 'dave0x'
-        self.assertIsNot( main.delete_user( test_user_id, user_col ), True )
-        self.assertIs(
-            main.save_users(
-                "accounts-with-delete.csv",
-                user_col
-            ),
-            True
-        )
 
     def test_search_user(self):
         '''
