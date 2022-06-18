@@ -10,7 +10,7 @@
 #
 export PYTHONPATH=$PYTHONPATH:~/git/github/Python320-ToDoApp/src
 
-rm td.db & python3 -m unittest -v tests.test_sn
+rm td.db & python3 -m unittest -v tests.test_tb
 
 
 # --- END --- #

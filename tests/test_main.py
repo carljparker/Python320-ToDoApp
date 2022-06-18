@@ -9,7 +9,7 @@ from collections.abc import Iterable
 
 import unittest
 
-import socialnetwork_model as sn
+import tddb as tb
 
 import main as main
 
@@ -26,7 +26,7 @@ class TestMain(unittest.TestCase):
         todo_col = main.init_todo_collection()
         self.assertIsInstance(
             todo_col,
-            sn.ToDoCollection,
+            tb.ToDoCollection,
             msg="Returned object not ToDoCollection"
         )
 
@@ -186,7 +186,7 @@ class TestMain(unittest.TestCase):
         self.assertTrue( main.load_todo_updates( todo_data, todo_col ) )
         self.assertIsInstance(
             main.search_todo( test_todo_id, todo_col ),
-            sn.ToDoTable,
+            tb.ToDoTable,
             msg = "Failed to find todo [" + 
                   test_todo_id + 
                   "] in [" + 
@@ -240,7 +240,7 @@ class TestMain(unittest.TestCase):
         test_todo_id = 'evmiles97_0000x'
         self.assertNotIsInstance(
             main.search_todo( test_todo_id, todo_col ),
-            sn.ToDoTable,
+            tb.ToDoTable,
             msg = "Failed to find todo"
         )
 

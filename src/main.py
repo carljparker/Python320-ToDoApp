@@ -18,7 +18,7 @@ import csv
 import pysnooper  # noqa:F401  type: ignore  pylint:disable=unused-import
 from loguru import logger
 
-import socialnetwork_model as sn
+import tddb as tb
 
 logger.remove()
 
@@ -39,7 +39,7 @@ def init_todo_collection():
     Creates and returns a new instance of ToDoCollection
     '''
     logger.debug( "Entering function" )
-    todo_col = sn.ToDoCollection()
+    todo_col = tb.ToDoCollection()
     return todo_col
 
 

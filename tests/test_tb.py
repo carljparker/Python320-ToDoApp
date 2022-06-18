@@ -1,5 +1,5 @@
 '''
-Unit test module for functions in main.py
+Unit test module for functions in tddb.py
 '''
 
 # pylint: disable=C0305
@@ -8,12 +8,12 @@ Unit test module for functions in main.py
 
 import unittest
 
-import socialnetwork_model as sn
+import tddb as tb
 
 from collections.abc import Iterable
 
 
-class TestSN(unittest.TestCase):
+class TestTB(unittest.TestCase):
     '''
     Class definition for unit tests for main.py
     '''
@@ -22,10 +22,10 @@ class TestSN(unittest.TestCase):
         '''
         Test initialization of todo collection
         '''
-        self.todo_col = sn.ToDoCollection()
+        self.todo_col = tb.ToDoCollection()
         self.assertIsInstance(
             self.todo_col,
-            sn.ToDoCollection,
+            tb.ToDoCollection,
             msg="Returned object not todo_collection"
         )
 
