@@ -210,5 +210,6 @@ def menUX():
 if __name__ == '__main__':
     logger.debug( "Program start" )
     todo_collection = main.init_todo_collection()
-    menUX()
-
+    if len( sys.argv ) == 1:
+        menUX()
+    quit_program()
