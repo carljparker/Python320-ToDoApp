@@ -176,10 +176,7 @@ def quit_program():
     logger.debug( "Entering function" )
     sys.exit()
 
-
-if __name__ == '__main__':
-    logger.debug( "Program start" )
-    todo_collection = main.init_todo_collection()
+def menUX():
     menu_options = {
         'A': load_todo_updates,
         'B': add_todo,
@@ -209,3 +206,9 @@ if __name__ == '__main__':
             menu_options[user_selection_upper]()
         else:
             print("Invalid option")
+
+if __name__ == '__main__':
+    logger.debug( "Program start" )
+    todo_collection = main.init_todo_collection()
+    menUX()
+
