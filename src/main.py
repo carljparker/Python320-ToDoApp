@@ -88,7 +88,7 @@ def save_todo_updates(filename, todo_collection):  # pylint:disable=unused-argum
     return True
 
 
-def add_todo(user_id, todo_id, todo_text, todo_collection):
+def add_todo(due_date, todo_id, todo_text, todo_collection):
     '''
     Creates a new instance of ToDo and stores it in
     user_collection(which is an instance of ToDoCollection)
@@ -101,11 +101,11 @@ def add_todo(user_id, todo_id, todo_text, todo_collection):
     '''
     logger.debug( "Entering function" )
     if search_todo( todo_id, todo_collection ) is None:
-        return todo_collection.add_todo( user_id, todo_id, todo_text )
+        return todo_collection.add_todo( due_date, todo_id, todo_text )
     return False
 
 
-def update_todo(todo_id, user_id, todo_text, todo_collection):
+def update_todo(todo_id, due_date, todo_text, todo_collection):
     '''
     Updates the values of an existing todo_id
 
@@ -115,7 +115,7 @@ def update_todo(todo_id, user_id, todo_text, todo_collection):
     '''
     logger.debug( "Entering function" )
     if search_todo( todo_id, todo_collection ) is not None:
-        todo_collection.modify_todo( todo_id, user_id, todo_text )
+        todo_collection.modify_todo( todo_id, due_date, todo_text )
         return True
     #
     # A todo with that ID doesn't exist, so cannot update
@@ -155,7 +155,7 @@ def search_todo(todo_id, todo_collection):
     return search_result
 
 
-def search_all_todo_updates( user_id, todo_collection ):
+def search_all_todo_updates( due_date, todo_collection ):
     '''
     Returns all the todo updates for a specified user.
 
@@ -165,7 +165,7 @@ def search_all_todo_updates( user_id, todo_collection ):
     - Otherwise, it returns None.
     '''
     logger.debug( "Entering function" )
-    search_result = todo_collection.search_all_todo_updates( user_id )
+    search_result = todo_collection.search_all_todo_updates( due_date )
     if search_result is None:
         return None
     return search_result

@@ -51,9 +51,9 @@ class UsersTable( BaseModel ):
     Instances of this class correspond to rows in the table,
     where a row is an individual user.
     '''
-    user_id = pw.CharField( primary_key = True,
+    due_date = pw.CharField( primary_key = True,
                             max_length = 30,
-                            constraints=[pw.Check("LENGTH(user_id) < 30")])
+                            constraints=[pw.Check("LENGTH(due_date) < 30")])
     user_name = pw.CharField( max_length = 30,
                               constraints=[pw.Check("LENGTH(user_name) < 30")])
     user_last_name = pw.CharField( max_length = 100,
@@ -67,7 +67,7 @@ class UsersTable( BaseModel ):
         '''
         Prints the state of an instance of a user.
         '''
-        print( self.user_id )
+        print( self.due_date )
         print( self.user_name )
         print( self.user_last_name )
         print( self.email )
@@ -84,9 +84,9 @@ class ToDoTable( BaseModel ):
                                   pw.Check("LENGTH(todo_id) < 30")
                               ]
                               )
-    user_id = pw.CharField( max_length = 30,
+    due_date = pw.CharField( max_length = 30,
                               constraints=[
-                                  pw.Check("LENGTH(user_id) < 30")
+                                  pw.Check("LENGTH(due_date) < 30")
                               ]
                               )
     todo_text = pw.CharField( max_length = 128,
@@ -105,7 +105,7 @@ class ToDoCollection():
     def __init__(self):
         logger.debug( "Initialize ToDoCollection" )
 
-    def add_todo( self, new_todo_user_id, new_todo_id, new_todo_text ):
+    def add_todo( self, new_todo_due_date, new_todo_id, new_todo_text ):
         '''
         add a new todo message to the collection
         '''
@@ -120,7 +120,7 @@ class ToDoCollection():
             with db.transaction():
                 new_todo = ToDoTable.create(
                     todo_id = new_todo_id,
-                    user_id = new_todo_user_id,
+                    due_date = new_todo_due_date,
                     todo_text = new_todo_text,
                 )
                 new_todo.save()
@@ -136,7 +136,7 @@ class ToDoCollection():
             logger.debug( "ToDo added" )
             return True
 
-    def modify_todo( self, mod_todo_id, user_id, mod_todo_text ):
+    def modify_todo( self, mod_todo_id, due_date, mod_todo_text ):
         '''
         Modifies an existing todo
         '''
@@ -155,7 +155,7 @@ class ToDoCollection():
                 ToDoTable.update(
                     todo_text = mod_todo_text).where(
                         ( ToDoTable.todo_id == mod_todo_id)
-                    and ( ToDoTable.user_id == user_id ) ).execute()  # noqa: E501 W503
+                    and ( ToDoTable.due_date == due_date ) ).execute()  # noqa: E501 W503
 
             logger.debug(
                 "todo_to_mod.todo_text: ", todo_to_mod.todo_text
@@ -234,7 +234,7 @@ class ToDoCollection():
             logger.debug( "ToDo ID not in database" )
             return None
 
-    def search_all_todo_updates( self, user_id ):
+    def search_all_todo_updates( self, due_date ):
         '''
         Returns all the todo updates for a specified user.
 
@@ -244,24 +244,24 @@ class ToDoCollection():
         - Otherwise, it returns None.
         '''
         logger.debug( "Entering method" )
-        logger.debug( "Param: user_id: " + user_id )
+        logger.debug( "Param: due_date: " + due_date )
 
         try:
             todo_list = ToDoTable.select().where(
-                ToDoTable.user_id == user_id )
+                ToDoTable.due_date == due_date )
 
         except ( pw.DatabaseError,
                  pw.IntegrityError,
                  pw.NotSupportedError ) as db_exception:
-            logger.info(f'Error searching for todos for {user_id}')
+            logger.info(f'Error searching for todos for {due_date}')
             logger.info(db_exception)
 
         else:
             if todo_list:
-                logger.debug( "Todos for " + user_id + " found" )
+                logger.debug( "Todos for " + due_date + " found" )
                 # pylint: disable=not-an-iterable
                 return [ todo.todo_text for todo in todo_list ]
-            logger.debug( "User ID: " + user_id + " not in database" )
+            logger.debug( "Due date: " + due_date + " not in database" )
             return None
 
     def filter_todo_by_string( self, target_string: str ):
