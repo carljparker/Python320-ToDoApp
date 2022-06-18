@@ -177,28 +177,26 @@ if __name__ == '__main__':
     logger.debug( "Program start" )
     todo_collection = main.init_todo_collection()
     menu_options = {
-        'B': load_todo_updates,
-        'H': add_todo,
-        'I': update_todo,
-        'J': search_todo,
-        'K': delete_todo,
-        'L': save_todo,
-        'M': search_all_todo_updates,
-        'N': filter_todo_by_string,
-        'O': flagged_todo_updates,
+        'A': load_todo_updates,
+        'B': add_todo,
+        'C': update_todo,
+        'D': search_todo,
+        'E': delete_todo,
+        'F': search_all_todo_updates,
+        'G': filter_todo_by_string,
+        'H': flagged_todo_updates,
         'Q': quit_program
     }
     while True:
         user_selection = input("""
-                            B: Load todo database
-                            H: Add todo
-                            I: Update todo
-                            J: Search todo
-                            K: Delete todo
-                            L: Save todo database to file
-                            M: Search all todo updates
-                            N: Filter todo updates by string
-                            O: Show all flagged todo updates
+                            A: Load todo database
+                            B: Add todo
+                            C: Update todo
+                            D: Search todo
+                            E: Delete todo
+                            F: Search all todo updates
+                            G: Filter todo updates by string
+                            H: Show all flagged todo updates
                             Q: Quit
 
                             Please enter your choice: """)
