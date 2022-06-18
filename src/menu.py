@@ -5,6 +5,7 @@ Provides a basic frontend
 # pylint: disable=C0301
 
 import sys
+import uuid
 
 from loguru import logger
 
@@ -30,7 +31,10 @@ def add_todo():
     '''
     logger.debug( "Entering function" )
     due_date = input('Due date: ')
-    todo_id = input('ToDo ID: ')
+    #
+    # Create the todo_id for the user
+    #
+    todo_id = uuid.uuid1().hex
     todo_text = input('ToDo text: ')
     if not main.add_todo(due_date, todo_id, todo_text, todo_collection):
         print("An error occurred while trying to add new todo")

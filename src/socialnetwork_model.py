@@ -79,9 +79,9 @@ class ToDoTable( BaseModel ):
     Instances of this class correspond to rows in the table,
     where a row is an individual ToDo item.
     '''
-    todo_id = pw.CharField( max_length = 30,
+    todo_id = pw.CharField( max_length = 32,
                               constraints=[
-                                  pw.Check("LENGTH(todo_id) < 30")
+                                  pw.Check("LENGTH(todo_id) <= 32")
                               ]
                               )
     due_date = pw.CharField( max_length = 30,
