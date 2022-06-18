@@ -10,7 +10,7 @@
 #
 export PYTHONPATH=$PYTHONPATH:~/git/github/Python320-ToDoApp/src
 
-rm td.db & python3 src/menu.py
+rm td.db & python3 src/todo.py
 
 
 # --- END --- #
