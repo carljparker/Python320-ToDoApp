@@ -6,8 +6,10 @@ Provides a basic frontend
 
 import sys
 import uuid
+import cerberus as cerb
 
 from loguru import logger
+
 
 import main
 
@@ -212,4 +214,24 @@ if __name__ == '__main__':
     todo_collection = main.init_todo_collection()
     if len( sys.argv ) == 1:
         menUX()
+    if len( sys.argv ) < 4:
+        print( "Usage: todo.py add <YYYY-MM-DD> <ToDo item>" )
+        quit_program()
+    #
+    # Otherwise, parse the commandline
+    #
+    cmd_params = {}
+    cmd_params[ "due_date" ] = sys.argv[ 2 ]
+    breakpoint();
+    todo_item = " ".join( [ sys.argv[ n ] for n in range( 3, len( sys.argv ) ) ] )
+    cmd_params[ "todo_item" ] = todo_item
+    print( cmd_params[ "due_date" ] )
+    print( cmd_params[ "todo_item" ] )
     quit_program()
+
+    v = cerb.Validator()
+    schema = {'due': {'type': 'string', 'regex': '\d\d\d\d-\d\d-\d\d', 'maxlength': 10 } }
+    document = { 'due': "2022-06-22" }
+    print( v.validate(document, schema) )
+    print( v.errors )
+

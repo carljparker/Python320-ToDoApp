@@ -9,9 +9,16 @@ CONTRIBUTING.rst
 LICENSE.txt
 Makefile
 README.rst
+accounts-bad.csv
+accounts.csv
 pyproject.toml
+run-todo.sh
+run-unittest-test_main.sh
+run-unittest-test_tb.sh
 setup.cfg
 setup.py
+status_updates_bad.csv
+status_updates_reasonable.csv
 tox.ini
 docs/Makefile
 docs/authors.rst
@@ -23,11 +30,9 @@ docs/license.rst
 docs/readme.rst
 docs/requirements.txt
 docs/_static/.gitignore
-src/accounts.csv
 src/main.py
-src/menu.py
-src/socialnetwork_model.py
-src/status_updates_reasonable.csv
+src/tddb.py
+src/todo.py
 src/Python320_ToDoApp.egg-info/PKG-INFO
 src/Python320_ToDoApp.egg-info/SOURCES.txt
 src/Python320_ToDoApp.egg-info/dependency_links.txt
@@ -39,4 +44,4 @@ src/python320_todoapp/skeleton.py
 tests/conftest.py
 tests/test_main.py
 tests/test_skeleton.py
-tests/test_sn.py
+tests/test_tb.py
