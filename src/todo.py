@@ -12,6 +12,7 @@ from loguru import logger
 
 
 import main
+import tdweb
 
 logger.remove()
 logger.add( sys.stderr, format="STDERR: {time:YYYY-MM-DD @ HH:mm:ss} | {level} | {file} : {function} : {line} : {message}", level="DEBUG" )
@@ -215,6 +216,13 @@ def menUX():
         else:
             print("Invalid option")
 
+def start_webservice():
+    print( "Starting webservice, access to ToDo list..." )
+    print( "CTRL-C to shutdown webservice and exit" )
+    print( "(Run tdweb.py to run webservice as a separate process.)" )
+    print( "======================================================" )
+    tdweb.start_webservice()
+
 def print_help():
     '''
     Print help text to STDOUT
@@ -225,34 +233,41 @@ if __name__ == '__main__':
     logger.debug( "Program start" )
     todo_collection = main.init_todo_collection()
     if len( sys.argv ) == 1:
+        #
+        # No cmdline params specified
+        #
         menUX()
-    if len( sys.argv ) < 4:
-        print_help()
-        quit_program()
+    if sys.argv[ 1 ] == "web":
+        start_webservice() 
     #
     # Otherwise, parse the commandline
     #
-    cmd_params = {}
-    cmd_params[ "due_date" ] = sys.argv[ 2 ]
-    todo_text = " ".join( [ sys.argv[ n ] for n in range( 3, len( sys.argv ) ) ] )
-    cmd_params[ "todo_text" ] = todo_text
-    logger.debug( cmd_params[ "due_date" ] )
-    logger.debug( cmd_params[ "todo_text" ] )
+    if sys.argv[ 1 ] == "add":
+        cmd_params = {}
+        cmd_params[ "due_date" ] = sys.argv[ 2 ]
+        todo_text = " ".join( [ sys.argv[ n ] for n in range( 3, len( sys.argv ) ) ] )
+        cmd_params[ "todo_text" ] = todo_text
+        logger.debug( cmd_params[ "due_date" ] )
+        logger.debug( cmd_params[ "todo_text" ] )
 
-    #
-    # Validate command-line parameters
-    #
-    v = cerb.Validator()
-    schema = {
-            'due_date': {'type': 'string', 'regex': '\d\d\d\d-\d\d-\d\d', 'maxlength': 10 },
-            'todo_text': {'type': 'string', 'regex': '[a-zA-Z.,;: ]*' } 
-            }
-    document = cmd_params
-    if v.validate(document, schema): 
-        add_todo( cmd_params[ "due_date" ], cmd_params[ "todo_text" ] )
+        #
+        # Validate command-line parameters
+        #
+        v = cerb.Validator()
+        schema = {
+                'due_date': {'type': 'string', 'regex': '\d\d\d\d-\d\d-\d\d', 'maxlength': 10 },
+                'todo_text': {'type': 'string', 'regex': '[a-zA-Z.,;: ]*' } 
+                }
+        document = cmd_params
+        if v.validate(document, schema): 
+            add_todo( cmd_params[ "due_date" ], cmd_params[ "todo_text" ] )
+            quit_program()
+        print( v.errors )
         quit_program()
-    print( v.errors )
-    quit_program()
+
+    else:
+        print_help()
+        quit_program()
 
 
 # --- END --- #
