@@ -26,23 +26,29 @@ def load_todo_updates():
     filename = input('Enter filename for todo file: ')
     main.load_todo_updates(filename, todo_collection)
 
-
-def add_todo():
+def add_todo_menu():
     '''
     Adds a new todo into the database
     '''
     logger.debug( "Entering function" )
+
     due_date = input('Due date: ')
+    todo_text = input('ToDo text: ')
+    add_todo( due_date, todo_text )
+
+def add_todo( due_date, todo_text ):
+    '''
+    Adds a new todo into the database
+    '''
+    logger.debug( "Entering function" )
     #
     # Create the todo_id for the user
     #
     todo_id = uuid.uuid1().hex
-    todo_text = input('ToDo text: ')
     if not main.add_todo(due_date, todo_id, todo_text, todo_collection):
         print("An error occurred while trying to add new todo")
     else:
         print("New todo was successfully added")
-
 
 def update_todo():
     '''
@@ -181,7 +187,7 @@ def quit_program():
 def menUX():
     menu_options = {
         'A': load_todo_updates,
-        'B': add_todo,
+        'B': add_todo_menu,
         'C': update_todo,
         'D': search_todo,
         'E': delete_todo,
@@ -209,31 +215,42 @@ def menUX():
         else:
             print("Invalid option")
 
+def print_help():
+    '''
+    Print help text to STDOUT
+    '''
+    print( "Usage: todo.py add <YYYY-MM-DD> <ToDo item>" )
+
 if __name__ == '__main__':
     logger.debug( "Program start" )
     todo_collection = main.init_todo_collection()
     if len( sys.argv ) == 1:
         menUX()
     if len( sys.argv ) < 4:
-        print( "Usage: todo.py add <YYYY-MM-DD> <ToDo item>" )
+        print_help()
         quit_program()
     #
     # Otherwise, parse the commandline
     #
     cmd_params = {}
     cmd_params[ "due_date" ] = sys.argv[ 2 ]
-    todo_item = " ".join( [ sys.argv[ n ] for n in range( 3, len( sys.argv ) ) ] )
-    cmd_params[ "todo_item" ] = todo_item
-    print( cmd_params[ "due_date" ] )
-    print( cmd_params[ "todo_item" ] )
+    todo_text = " ".join( [ sys.argv[ n ] for n in range( 3, len( sys.argv ) ) ] )
+    cmd_params[ "todo_text" ] = todo_text
+    logger.debug( cmd_params[ "due_date" ] )
+    logger.debug( cmd_params[ "todo_text" ] )
 
+    #
+    # Validate command-line parameters
+    #
     v = cerb.Validator()
     schema = {
             'due_date': {'type': 'string', 'regex': '\d\d\d\d-\d\d-\d\d', 'maxlength': 10 },
-            'todo_item': {'type': 'string', 'regex': '[a-zA-Z.,;: ]*' } 
+            'todo_text': {'type': 'string', 'regex': '[a-zA-Z.,;: ]*' } 
             }
     document = cmd_params
-    print( v.validate(document, schema) )
+    if v.validate(document, schema): 
+        add_todo( cmd_params[ "due_date" ], cmd_params[ "todo_text" ] )
+        quit_program()
     print( v.errors )
     quit_program()
 
