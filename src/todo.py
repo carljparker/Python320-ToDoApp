@@ -222,16 +222,21 @@ if __name__ == '__main__':
     #
     cmd_params = {}
     cmd_params[ "due_date" ] = sys.argv[ 2 ]
-    breakpoint();
     todo_item = " ".join( [ sys.argv[ n ] for n in range( 3, len( sys.argv ) ) ] )
     cmd_params[ "todo_item" ] = todo_item
     print( cmd_params[ "due_date" ] )
     print( cmd_params[ "todo_item" ] )
-    quit_program()
 
     v = cerb.Validator()
-    schema = {'due': {'type': 'string', 'regex': '\d\d\d\d-\d\d-\d\d', 'maxlength': 10 } }
-    document = { 'due': "2022-06-22" }
+    schema = {
+            'due_date': {'type': 'string', 'regex': '\d\d\d\d-\d\d-\d\d', 'maxlength': 10 },
+            'todo_item': {'type': 'string', 'regex': '[a-zA-Z.,;: ]*' } 
+            }
+    document = cmd_params
     print( v.validate(document, schema) )
     print( v.errors )
+    quit_program()
+
+
+# --- END --- #
 
