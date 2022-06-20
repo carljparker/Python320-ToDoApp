@@ -24,11 +24,11 @@ LOG_FORMAT = "{time:YYYY-MM-DD @ HH:mm:ss} | {level} | " + \
 
 logger.add( sys.stderr,
             format=LOG_FORMAT,
-            level="DEBUG" )
+            level="ERROR" )
 
 logger.add( "log_{time:YYYY-MM-DD}.log",
             format=LOG_FORMAT,
-            level="DEBUG" )
+            level="ERROR" )
 
 db = pw.SqliteDatabase('td.db')
 
