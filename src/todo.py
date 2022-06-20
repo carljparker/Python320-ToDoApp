@@ -187,26 +187,18 @@ def quit_program():
 
 def menUX():
     menu_options = {
-        'A': load_todo_updates,
-        'B': add_todo_menu,
-        'C': update_todo,
-        'D': search_todo,
-        'E': delete_todo,
-        'F': search_all_todo_updates,
-        'G': filter_todo_by_string,
-        'H': flagged_todo_updates,
+        'A': add_todo_menu,
+        'B': search_all_todo_updates,
+        'C': filter_todo_by_string,
+        'D': flagged_todo_updates,
         'Q': quit_program
     }
     while True:
         user_selection = input("""
-                            A: Load ToDo database
-                            B: Add ToDo
-                            C: Update ToDo
-                            D: Search ToDo
-                            E: Delete ToDo
-                            F: Search ToDos by due date
-                            G: Filter ToDos by string
-                            H: Show all flagged ToDos
+                            A: Add ToDo
+                            B: Search ToDos by due date
+                            C: Filter ToDos by string
+                            D: Show all flagged ToDos
                             Q: Quit
 
                             Please enter your choice: """)
