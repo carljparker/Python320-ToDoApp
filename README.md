@@ -24,6 +24,8 @@ above.
 Also, I've prepared a (short) video that demonstrate the project's
 functionality--described in detail below.
 
+>  <https://youtu.be/oBSrpIEQP-U>
+
 
 ## Adapting the social media app ##
 

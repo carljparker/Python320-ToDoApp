@@ -1,8 +1,10 @@
 cerberus
 flask
+flask_restful
 loguru
 peewee
 pysnooper
+sqlalchemy
 
 [:python_version < "3.8"]
 importlib-metadata
