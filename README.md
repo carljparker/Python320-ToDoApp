@@ -14,6 +14,16 @@ but it demonstrates what I saw as the learning goals for the project:
 - The app leverages flask to support a web service, again with very
   basic functionality.
 
+The project is available in the following public GitHub repo:
+
+>  <https://github.com/carljparker/Python320-ToDoApp/tree/cajopa/assign7-dev>
+
+Note that the project is in the `cajopa/assign7-dev` branch--as shown
+above.
+
+Also, I've prepared a (short) video that demonstrate the project's
+functionality--described in detail below.
+
 
 ## Adapting the social media app ##
 
